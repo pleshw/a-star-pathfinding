@@ -28,9 +28,8 @@ function Setup(){
 	canvas.fillStyle = "black";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
-	// setup the grid´[our map].
-	grid = new Grid( 5, 5 );
-
+	// setup the grid´[our map]´.
+	grid = new Grid( 12, 12 );
 	cellWidth = canvas.width/grid.cols;
 	cellHeigth = canvas.height/grid.rows;
 
@@ -48,12 +47,11 @@ function Setup(){
 	}
 	context.stroke();
 
-
-
+	// Instantiating a new player
 	const maxHp = 20; 
 	const maxSp = 5;
-	const width = 32
-	const height =  32; 
+	const width = 22
+	const height =  22; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
 		0, 0, 
@@ -75,7 +73,7 @@ function Draw() {
 	Logic();
 
 	// Draw the player.
-	context.fillStyle = "lightgrey";
+	context.fillStyle = "#dd88ff";
 	context.fillRect(
 		player.centerPosition.x + cellWidth/2, player.centerPosition.y + cellHeigth/2, // position
 		player.width, player.height // dimensions
