@@ -47,6 +47,10 @@ class Grid{
 		return this.c;
 	}
 
+	get length(){
+		return this.rows * this.cols;
+	}
+
 	get buffer(){
 		return this.cell;
 	}
@@ -66,6 +70,4 @@ class Grid{
 	isBlocked( x, y ){
 		return isBitOn( this.cell[this.index(x,y)], BLOCKED );
 	}
-
-
 }

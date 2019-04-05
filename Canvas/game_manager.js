@@ -4,6 +4,7 @@ let context;
 let player;
 
 let grid;
+let cellWidth, cellHeigth;
 
 window.addEventListener("load", function(){
 
@@ -23,21 +24,44 @@ function Setup(){
 	canvas.width  = 800;
 	canvas.height = 600;
 
+	// draw the background
 	canvas.fillStyle = "black";
+	context.fillRect(0, 0, canvas.width, canvas.height);
+
+	// setup the grid´[our map].
+	grid = new Grid( 5, 5 );
+
+	cellWidth = canvas.width/grid.cols;
+	cellHeigth = canvas.height/grid.rows;
+
+	// drawing the grid lines
+		// the first and the last line are not required.
+	context.strokeStyle = "white";
+	for( let x = 1; x < grid.cols; x++ ){
+		context.moveTo(x * cellWidth, 0);
+		context.lineTo(x * cellWidth, grid.rows*cellHeigth );
+	}
+	context.stroke();
+	for( let y = 1; y < grid.rows; y++ ){
+		context.moveTo(0, y * cellHeigth);
+		context.lineTo(grid.cols*cellWidth, y * cellHeigth );
+	}
+	context.stroke();
+
+
 
 	const maxHp = 20; 
 	const maxSp = 5;
 	const width = 32
 	const height =  32; 
-
-	grid = new Grid( 30, 30 );
-
-	// player at the bottom left of the grid.
+	// make a player at the bottom left of the grid.
 	player = new Player( 
-		0, canvas.height - height, 
+		0, 0, 
 		maxHp, maxSp, 
 		width, height
 	); 
+
+	canvas.fillStyle = "black";
 }
 
 // All the game logic. 
@@ -48,13 +72,12 @@ function Logic(){
 
 // Draw the game.
 function Draw() {
-	context.fillRect(0, 0, canvas.width, canvas.height);
 	Logic();
 
 	// Draw the player.
 	context.fillStyle = "lightgrey";
 	context.fillRect(
-		player.position.x, player.position.y, // position
+		player.centerPosition.x + cellWidth/2, player.centerPosition.y + cellHeigth/2, // position
 		player.width, player.height // dimensions
 	);
 }

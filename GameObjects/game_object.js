@@ -16,8 +16,8 @@ class GameObject{
 	// The position will be the center of the object.
 	get centerPosition(){
 		return {
-			x: this.x + (this.width/2),
-			y: this.y + (this.height/2)
+			x: this.x - (this.width/2),
+			y: this.y - (this.height/2)
 		};
 	}
 
