@@ -7,16 +7,19 @@ let backgroundContext;
 let gridCanvas;
 let gridContext;
 
+let grid;
+let cellWidth, cellHeigth;
+let cellPadding = 20; // percentage
+
 let onCanvasMousePosition;
 let drawCursor = false;
 let cursorImg = new Image();
 
 let keydown = new Map();
+let mousedown = false;
 
 let player;
 
-let grid;
-let cellWidth, cellHeigth;
 
 
 
@@ -44,6 +47,13 @@ window.addEventListener("load", function(){
 		drawCursor = false;
 	});
 
+	gameCanvas.addEventListener("mousedown", _event => {
+		mousedown = true;
+	});
+	gameCanvas.addEventListener("mouseup", _event => {
+		mousedown = false;
+	});
+
 	gameCanvas.addEventListener("mousemove", _event => {
 		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
 	});
@@ -62,35 +72,21 @@ function Setup(){
 	gameCanvas.width = gridCanvas.width = backgroundCanvas.width  = 800;
 	gameCanvas.height = gridCanvas.height = backgroundCanvas.height  = 600;
 
-	// draw the background
+	// Draw the background
 	backgroundContext.fillStyle = "black";
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
-	// setup the grid´[our map]´.
+	// Setup and draw the grid.
 	let gridRows = 20;
 	let gridCols = 20;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeigth = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeigth );
-
-	// drawing the grid lines
-		// the first and the last line are not required.
-	gridContext.strokeStyle = "white";
-	for( let x = 1; x < grid.cols; x++ ){
-		gridContext.moveTo(x * cellWidth, 0);
-		gridContext.lineTo(x * cellWidth, grid.rows*cellHeigth );
-	}
-	gridContext.stroke();
-	for( let y = 1; y < grid.rows; y++ ){
-		gridContext.moveTo(0, y * cellHeigth);
-		gridContext.lineTo(grid.cols*cellWidth, y * cellHeigth );
-	}
-	gridContext.stroke();
+	drawGrid();
 
 	// remove the default cursor
 	gameCanvas.style.cursor = "none";
-
-	// Instantiating a new player
+	// Instantiating the new player variables.
 	const maxHp = 20; 
 	const maxSp = 5;
 	const width = 22
@@ -126,14 +122,17 @@ function Draw() {
 			onCanvasMousePosition.x, onCanvasMousePosition.y,
 			12, 12);
 
+		let finalPadding = cellPadding;
+		if (mousedown) finalPadding += (cellPadding * (25/100));
+
 		// Paint the cell that is under the cursor.
 		let selectedCell = grid.positionOfCellAt(onCanvasMousePosition.x,  onCanvasMousePosition.y);
-		// Get the margins of the fill -> 3% of cell width and height.
-		let selectedCellFillMarginHorizontal = cellWidth*(10/100);
-		let selectedCellFillMarginVertical = cellHeigth*(10/100);
-		// Get the fill area -> 94% of width and height
-		let selectedCellFillWidth = cellWidth*(80/100);
-		let selectedCellFillHeight = cellHeigth * (80/100);
+		// Get the margins of the fill -> padding% of cell width and height.
+		let selectedCellFillMarginHorizontal = cellWidth*(finalPadding/100);
+		let selectedCellFillMarginVertical = cellHeigth*(finalPadding/100);
+		// Get the fill area -> (100-(padding*2))% of width and height -> center
+		let selectedCellFillWidth = cellWidth*((100-(finalPadding*2))/100);
+		let selectedCellFillHeight = cellHeigth*((100-(finalPadding*2))/100);
 		// Get the fill position considering the margin
 		let selectedCellFillPosition = {
 			x: selectedCellFillMarginHorizontal + (cellWidth*selectedCell.x),
@@ -145,4 +144,24 @@ function Draw() {
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			selectedCellFillWidth, selectedCellFillHeight);
 	}
+}
+
+
+// Clear the grid canvas.
+function clearGrid(){
+	gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+}
+// Draw the grid cols and rows at grid canvas.
+function drawGrid(){
+	gridContext.strokeStyle = "white";
+	for( let x = 0; x < grid.cols; x++ ){
+		gridContext.moveTo(x * cellWidth, 0);
+		gridContext.lineTo(x * cellWidth, grid.rows*cellHeigth );
+	}
+	gridContext.stroke();
+	for( let y = 0; y < grid.rows; y++ ){
+		gridContext.moveTo(0, y * cellHeigth);
+		gridContext.lineTo(grid.cols*cellWidth, y * cellHeigth );
+	}
+	gridContext.stroke();
 }
