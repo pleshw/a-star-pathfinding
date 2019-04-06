@@ -9,6 +9,7 @@ let gridContext;
 
 let onCanvasMousePosition;
 let drawCursor = false;
+let cursorImg = new Image();
 
 let keydown = new Map();
 
@@ -65,13 +66,12 @@ function Setup(){
 	backgroundContext.fillStyle = "black";
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
-	// remove the default cursor
-	gameCanvas.style.cursor = "none";
-
 	// setup the grid´[our map]´.
-	grid = new Grid( 12, 12 );
-	cellWidth = gridCanvas.width/grid.cols;
-	cellHeigth = gridCanvas.height/grid.rows;
+	let gridRows = 20;
+	let gridCols = 20;
+	cellWidth = gridCanvas.width/gridCols;
+	cellHeigth = gridCanvas.height/gridRows;
+	grid = new Grid( gridRows, gridCols, cellWidth, cellHeigth );
 
 	// drawing the grid lines
 		// the first and the last line are not required.
@@ -87,6 +87,9 @@ function Setup(){
 	}
 	gridContext.stroke();
 
+	// remove the default cursor
+	gameCanvas.style.cursor = "none";
+
 	// Instantiating a new player
 	const maxHp = 20; 
 	const maxSp = 5;
@@ -97,27 +100,50 @@ function Setup(){
 		0, 0, 
 		maxHp, maxSp, 
 		width, height
-	); 
+	);
+
+	cursorImg.src = "src/img/cursor.png";
 }
 
 
 // Draw the game.
 function Draw() {
+	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-	// Draw the player at the center of the cell.
-	gameContext.fillStyle = "#cfe";
+	// Get the player drawing position.
 	playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
 	playerVerticalDrawing = ((2*cellHeigth*player.position.y) + cellHeigth  - player.height)/2;
+	// Draw the player at the center of the cell.
+	gameContext.fillStyle = "#cfe";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
-		player.width, player.height // dimensions
-	);
+		player.width, player.height);
 
-	// Drawing the game cursor.
-	gameContext.fillStyle = "red";
-	if (drawCursor)
-		gameContext.fillRect( 
-			onCanvasMousePosition.x, onCanvasMousePosition.y, 
-			32, 32 );
+	if (drawCursor){
+		// Draw the cursor.
+		gameContext.drawImage( 
+			cursorImg, 
+			onCanvasMousePosition.x, onCanvasMousePosition.y,
+			12, 12);
+
+		// Paint the cell that is under the cursor.
+		let selectedCell = grid.positionOfCellAt(onCanvasMousePosition.x,  onCanvasMousePosition.y);
+		// Get the margins of the fill -> 3% of cell width and height.
+		let selectedCellFillMarginHorizontal = cellWidth*(10/100);
+		let selectedCellFillMarginVertical = cellHeigth*(10/100);
+		// Get the fill area -> 94% of width and height
+		let selectedCellFillWidth = cellWidth*(80/100);
+		let selectedCellFillHeight = cellHeigth * (80/100);
+		// Get the fill position considering the margin
+		let selectedCellFillPosition = {
+			x: selectedCellFillMarginHorizontal + (cellWidth*selectedCell.x),
+			y: selectedCellFillMarginVertical + (cellHeigth*selectedCell.y),
+		}
+		// Paint
+		gameContext.fillStyle = "rgba(255, 180, 180, 0.1";
+		gameContext.fillRect(
+			selectedCellFillPosition.x, selectedCellFillPosition.y,
+			selectedCellFillWidth, selectedCellFillHeight);
+	}
 }
