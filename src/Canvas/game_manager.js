@@ -102,7 +102,7 @@ function Setup(){
 		width, height
 	);
 
-	cursorImg.src = "src/img/cursor.png";
+	cursorImg.src = "src/img/Cursor.png";
 }
 
 
@@ -122,8 +122,7 @@ function Draw() {
 
 	if (drawCursor){
 		// Draw the cursor.
-		gameContext.drawImage( 
-			cursorImg, 
+		gameContext.drawImage(cursorImg, 
 			onCanvasMousePosition.x, onCanvasMousePosition.y,
 			12, 12);
 
