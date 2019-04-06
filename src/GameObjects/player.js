@@ -21,8 +21,8 @@ class Player extends GameObject{
 		return this.moves;
 	}
 
-	newTurn(){
-		this.moves = this.maxMoves;
+	endTurn(){
+		this.moves = 0;
 	}
 
 	canMove(){

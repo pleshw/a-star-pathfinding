@@ -1,28 +1,55 @@
-let canvas;
-let context;
+let gameCanvas;
+let gameContext;
+
+let backgroundCanvas;
+let backgroundContext;
+
+let gridCanvas;
+let gridContext;
+
+let onCanvasMousePosition;
+let drawCursor = false;
+
+let keydown = new Map();
 
 let player;
 
 let grid;
 let cellWidth, cellHeigth;
 
-let keydown = new Map();
+
 
 window.addEventListener("load", function(){
-	canvas = document.getElementById("canvas");
-	context = canvas.getContext('2d');
+	gameCanvas = document.getElementById("gameCanvas");
+	gameContext = gameCanvas.getContext('2d');
 
-	addEventListener("keypress", function(target){
-		keydown[target.key] = true;
+	backgroundCanvas = document.getElementById("backgroundCanvas");
+	backgroundContext = backgroundCanvas.getContext('2d');
+
+	gridCanvas = document.getElementById("gridCanvas");
+	gridContext = gridCanvas.getContext('2d');
+
+	addEventListener("keydown", _target => {
+		keydown[_target.key] = true;
+	});
+	addEventListener("keyup", _target => {
+		keydown[_target.key] = false;
 	});
 
-	addEventListener("keyup", function(target){
-		keydown[target.key] = false;
+	gameCanvas.addEventListener("mouseover", _event => {
+		drawCursor = true;
+	});
+	gameCanvas.addEventListener("mouseout", _event => {
+		drawCursor = false;
+	});
+
+	gameCanvas.addEventListener("mousemove", _event => {
+		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
 	});
 
 
 	Setup();
-	setInterval( function(){Draw();}, 1000/60 );
+	setInterval( function(){Draw();}, 1000/120 );
 });
 
 
@@ -31,13 +58,34 @@ window.addEventListener("load", function(){
 // Control the game settings.
 	// Instantiate the main game variables and the player.
 function Setup(){
-	canvas.width  = 800;
-	canvas.height = 600;
+	gameCanvas.width = gridCanvas.width = backgroundCanvas.width  = 800;
+	gameCanvas.height = gridCanvas.height = backgroundCanvas.height  = 600;
+
+	// draw the background
+	backgroundContext.fillStyle = "black";
+	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
+
+	// remove the default cursor
+	gameCanvas.style.cursor = "none";
 
 	// setup the grid´[our map]´.
 	grid = new Grid( 12, 12 );
-	cellWidth = canvas.width/grid.cols;
-	cellHeigth = canvas.height/grid.rows;
+	cellWidth = gridCanvas.width/grid.cols;
+	cellHeigth = gridCanvas.height/grid.rows;
+
+	// drawing the grid lines
+		// the first and the last line are not required.
+	gridContext.strokeStyle = "white";
+	for( let x = 1; x < grid.cols; x++ ){
+		gridContext.moveTo(x * cellWidth, 0);
+		gridContext.lineTo(x * cellWidth, grid.rows*cellHeigth );
+	}
+	gridContext.stroke();
+	for( let y = 1; y < grid.rows; y++ ){
+		gridContext.moveTo(0, y * cellHeigth);
+		gridContext.lineTo(grid.cols*cellWidth, y * cellHeigth );
+	}
+	gridContext.stroke();
 
 	// Instantiating a new player
 	const maxHp = 20; 
@@ -52,44 +100,24 @@ function Setup(){
 	); 
 }
 
-// The game logic.
-function Logic(){
-	if (keydown['w']) player.move(TOP);
-	if (keydown['d']) player.move(RIGHT);
-	if (keydown['s']) player.move(BOTTOM);
-	if (keydown['a']) player.move(LEFT);
-}
 
 // Draw the game.
 function Draw() {
-	Logic();
-
-	// draw the background
-	context.fillStyle = "black";
-	context.fillRect( 0, 0, canvas.width, canvas.height );
+	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
 	// Draw the player at the center of the cell.
-	context.fillStyle = "#cfe";
+	gameContext.fillStyle = "#cfe";
 	playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
 	playerVerticalDrawing = ((2*cellHeigth*player.position.y) + cellHeigth  - player.height)/2;
-	context.fillRect(
+	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
 		player.width, player.height // dimensions
 	);
 
-	// drawing the grid lines
-	// the first and the last line are not required.
-	context.strokeStyle = "white";
-	for( let x = 1; x < grid.cols; x++ ){
-		context.moveTo(x * cellWidth, 0);
-		context.lineTo(x * cellWidth, grid.rows*cellHeigth );
-	}
-	context.stroke();
-	for( let y = 1; y < grid.rows; y++ ){
-		context.moveTo(0, y * cellHeigth);
-		context.lineTo(grid.cols*cellWidth, y * cellHeigth );
-	}
-	context.stroke();
-
-
+	// Drawing the game cursor.
+	gameContext.fillStyle = "red";
+	if (drawCursor)
+		gameContext.fillRect( 
+			onCanvasMousePosition.x, onCanvasMousePosition.y, 
+			32, 32 );
 }

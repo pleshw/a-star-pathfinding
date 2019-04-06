@@ -5,8 +5,20 @@
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<style type="text/css">
+	canvas{
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+</style>
 
+<canvas id="backgroundCanvas"></canvas>
+<canvas id="gridCanvas"></canvas>
+<canvas id="gameCanvas"></canvas>
+
+
+<script type="text/javascript" src="src/Canvas/cursor.js"></script>
 <script type="text/javascript" src="src/common.js"></script>
 <script type="text/javascript" src="src/GameObjects/game_object.js"></script>
 <script type="text/javascript" src="src/GameObjects/player.js"></script>
