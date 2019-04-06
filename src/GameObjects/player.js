@@ -17,7 +17,7 @@ class Player extends GameObject{
 		this.maxMoves = 5;
 	}
 
-	get stillCanMove(){
+	get movesLeft(){
 		return this.moves;
 	}
 
@@ -25,4 +25,18 @@ class Player extends GameObject{
 		this.moves = this.maxMoves;
 	}
 
+	canMove(){
+		if (this.moves > 0) return true;
+		return false;
+	}
+
+	move( bitOfMovement ){
+		if (!this.canMove()) return false;
+		this.moves--; 
+		if (isBitOn(bitOfMovement, TOP)) this.y--;
+		if (isBitOn(bitOfMovement, RIGHT)) this.x++;
+		if (isBitOn(bitOfMovement, BOTTOM)) this.y++;
+		if (isBitOn(bitOfMovement, LEFT)) this.x--;
+
+	}
 }

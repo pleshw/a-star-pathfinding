@@ -24,10 +24,6 @@
  let OCCUPIED = 2;
  let BLOCKED = 4;
 
- function isBitOn( byte, bit ){
- 	return (byte & bit) == bit;
- }
-
 class Grid{
 	constructor( rows, cols ){
 		this.r = rows;
