@@ -1,12 +1,16 @@
 
 
-// bitwise operations to movement. Explanation on `grid.js`
+// BIT representation for bitwise operations with movement. Explanation on `grid.js`
 const TOP = 1;
 const RIGHT = 2;
 const LEFT = 4;
 const BOTTOM = 8;
+const DIAGONAL_TOP_RIGHT = TOP + RIGHT;
+const DIAGONAL_TOP_LEFT = TOP + LEFT;
+const DIAGONAL_BOTTOM_RIGHT = BOTTOM + RIGHT;
+const DIAGONAL_BOTTOM_LEFT = BOTTOM + LEFT;
 
-class GameObject{
+class GameObject {
 	constructor( x, y, w, h ){
 		this.x = x;
 		this.y = y;

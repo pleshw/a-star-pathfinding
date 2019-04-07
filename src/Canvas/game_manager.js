@@ -143,6 +143,10 @@ function Draw() {
 		gameContext.fillRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			selectedCellFillWidth, selectedCellFillHeight);
+		
+		if (mousedown){
+			A_Star(player.position, selectedCell, grid);
+		}
 	}
 }
 

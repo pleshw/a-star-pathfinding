@@ -20,10 +20,10 @@
 												0000 0000 -> false
  */
 
- let FREE = 1;
- let SELECTED = 2;
- let OCCUPIED = 4;
- let BLOCKED = 8;
+ var FREE = 1;
+ var SELECTED = 2;
+ var OCCUPIED = 4;
+ var BLOCKED = 8;
 
 class Grid{
 	constructor( rows, cols, cellWidth, cellHeight ){
@@ -84,13 +84,56 @@ class Grid{
 		return false;
 	}
 
+	// return true if the cell is valid
+	cellExist( x, y ){
+		if (x < 0 || y < 0) return false;
+		if (x >= this.cols || y >= this.rows) return false;
+		return true;
+	}
+
+	// return the state of a cell
+		// if it does not exist return -1.
+	cellAt( x, y ){
+		if ( !this.cellExist(x, y) ) return -1; 
+		return this.cell[this.indexOfCellAt(x, y)];
+	}
+
+	// return the cell state of adjacent cells to the cell at given position.
+	adjacentsOf( x, y ){
+		return{
+			top: this.cellAt(x, y-1),
+			right:  this.cellAt(x+1, y),
+			bottom: this.cellAt(x, y+1),
+			left: this.cellAt(x-1, y),
+			diagonalTopRight: this.cellAt(x+1, y-1),
+			diagonalTopLeft: this.cellAt(x-1, y-1),
+			diagonalBottomRight: this.cellAt(x+1, y+1),
+			diagonalBottomLeft: this.cellAt(x-1, y+1)
+		};
+	}
+
+	// return the position of any valid cell that is adjacent to the cell at given position.
+	positionOfAdjacents( x, y ){
+		let adjacents = [
+			 {x: x,   y: y-1},
+			 {x: x+1, y: y},
+			 {x: x,   y: y+1},
+			 {x: x-1, y: y},
+			 {x: x+1, y: y-1},
+			 {x: x-1, y: y-1},
+			 {x: x+1, y: y+1},
+			 {x: x-1, y: y+1}
+		];
+		return adjacents.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
+	}
+
 	// return the position considering the grid an matrix of a cell in a given position.
 		// This function consider a cell as an element in space
 		// This function return the position on the buffer[x,y] of a cell in a given position.
 		/*
 			Example: cell at position 8,0 on canvas is the cell at position 1 on buffer.
 		 */ 
-	cellAt( x, y ){
+	indexOfCellAt( x, y ){
 		let final_x = Math.floor(x/this.cellWidth);
 		let final_y = Math.floor(y/this.cellHeight);
 		return this.index(final_x, final_y);
