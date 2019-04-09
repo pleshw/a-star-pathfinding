@@ -139,7 +139,7 @@ function Draw() {
 			y: selectedCellFillMarginVertical + (cellHeigth*selectedCell.y),
 		}
 		// Paint
-		gameContext.fillStyle = "rgba(247, 189, 143, 0.5";
+		gameContext.fillStyle = "rgba(247, 189, 143, 0.5)";
 		gameContext.fillRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			selectedCellFillWidth, selectedCellFillHeight);

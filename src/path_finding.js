@@ -9,6 +9,11 @@ function removeFromArray( arr, elmnt ){
 	}
 }
 
+function heuristicEvaluate( a, b ){
+	let distance = distance2d( a.x, a.y, b.x, b.y );
+	return distance;
+}
+
 
 class A_StarNode {
 	constructor( x, y ){
@@ -16,9 +21,10 @@ class A_StarNode {
 		this.y = y;
 		this.g = 0; // distance from the goal
 		this.h = 0; //distance from the origin
-		this.f = 0;
 	}
-	
+	get f(){
+		return this.g + this.h;
+	}
 }
 
 class A_StarGrid extends Grid{
@@ -87,7 +93,7 @@ class A_StarGrid extends Grid{
 }
 
 function A_Star(initialPosition, finalPosition, grid) {
-	let pathGrid = new A_StarGrid( grid, finalPosition );
+	let pathGrid = new A_StarGrid( grid, initialPosition );
 
 	let bestStep = 0;
 	for(let i = 0; i < pathGrid.openList.length; i++)
@@ -95,10 +101,8 @@ function A_Star(initialPosition, finalPosition, grid) {
 			bestStep = i;
 
 	let current = pathGrid.openList[bestStep];
-	console.log(current);
 
-
-	if (current === pathGrid.index(finalPosition) )
+	if (current === pathGrid.index(finalPosition.x, finalPosition.y) )
 		console.log(" SUCESS! ");
 
 	pathGrid.removeFromOpenList( current );
@@ -107,7 +111,6 @@ function A_Star(initialPosition, finalPosition, grid) {
 	let neighbors = pathGrid.neighbors(current);
 	for (var i = 0; i < neighbors.length; i++) {
 		let actualNeighbor = neighbors[i];
-		
 
 		if (!pathGrid.closedList.includes(actualNeighbor)){
 			var tmpGScore = current.g + 1;
@@ -119,8 +122,12 @@ function A_Star(initialPosition, finalPosition, grid) {
 				actualNeighbor.g = tmpGScore;
 				pathGrid.openList = actualNeighbor;
 			}
+			actualNeighbor.h = heuristicEvaluate( actualNeighbor, finalPosition );
+			console.log(actualNeighbor.f);
 		} 
 	}
 
-	console.log(pathGrid.openList);
+
+
+
 }
