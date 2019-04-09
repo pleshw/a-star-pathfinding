@@ -69,8 +69,8 @@ window.addEventListener("load", function(){
 // Control the game settings.
 	// Instantiate the main game variables and the player.
 function Setup(){
-	gameCanvas.width = gridCanvas.width = backgroundCanvas.width  = 800;
-	gameCanvas.height = gridCanvas.height = backgroundCanvas.height  = 600;
+	gameCanvas.width = gridCanvas.width = backgroundCanvas.width  = window.innerWidth;
+	gameCanvas.height = gridCanvas.height = backgroundCanvas.height  = window.innerHeight;
 
 	// Draw the background
 	backgroundContext.fillStyle = "black";
@@ -78,7 +78,7 @@ function Setup(){
 
 	// Setup and draw the grid.
 	let gridRows = 20;
-	let gridCols = 20;
+	let gridCols = 32;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeigth = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeigth );
@@ -126,7 +126,7 @@ function Draw() {
 		if (mousedown) finalPadding += (cellPadding * (25/100));
 
 		// Paint the cell that is under the cursor.
-		let selectedCell = grid.positionOfCellAt(onCanvasMousePosition.x,  onCanvasMousePosition.y);
+		let selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
 		// Get the margins of the fill -> padding% of cell width and height.
 		let selectedCellFillMarginHorizontal = cellWidth*(finalPadding/100);
 		let selectedCellFillMarginVertical = cellHeigth*(finalPadding/100);
@@ -158,12 +158,12 @@ function clearGrid(){
 // Draw the grid cols and rows at grid canvas.
 function drawGrid(){
 	gridContext.strokeStyle = "white";
-	for( let x = 0; x < grid.cols; x++ ){
+	for( let x = 0; x < grid.cols+1; x++ ){
 		gridContext.moveTo(x * cellWidth, 0);
 		gridContext.lineTo(x * cellWidth, grid.rows*cellHeigth );
 	}
 	gridContext.stroke();
-	for( let y = 0; y < grid.rows; y++ ){
+	for( let y = 0; y < grid.rows+1; y++ ){
 		gridContext.moveTo(0, y * cellHeigth);
 		gridContext.lineTo(grid.cols*cellWidth, y * cellHeigth );
 	}

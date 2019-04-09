@@ -27,25 +27,33 @@
 
 class Grid{
 	constructor( rows, cols, cellWidth, cellHeight ){
-		this.r = rows;
-		this.c = cols;
+		this._rows = rows;
+		this._cols = cols;
 
 		// Array of cells.
 		this.cell = [];
 
-		this.cellWidth = cellWidth;
-		this.cellHeight = cellHeight;
+		this.cell_width = cellWidth;
+		this.cell_height = cellHeight;
 
 		for( let i = 0; i < rows * cols; i++ )
 			this.cell[i] = 1;
 	}
 
 	get rows(){
-		return this.r;
+		return this._rows;
 	}
 
 	get cols(){
-		return this.c;
+		return this._cols;
+	}
+
+	get cellWidth(){
+		return this.cell_width;
+	}
+
+	get cellHeight(){
+		return this.cell_height;
 	}
 
 	get length(){
@@ -57,7 +65,13 @@ class Grid{
 	}
 
 	index( x, y ){
+		if (!this.cellExist(x, y)) return -1;
 		return x + ( y * this.cols );
+	}
+
+	cellAt( x, y ){
+		if (!this.cellExist(x, y)) return -1;
+		 return this.cell[this.index(x, y)];
 	}
 
 	isFree( x, y ){
@@ -91,12 +105,7 @@ class Grid{
 		return true;
 	}
 
-	// return the state of a cell
-		// if it does not exist return -1.
-	cellAt( x, y ){
-		if ( !this.cellExist(x, y) ) return -1; 
-		return this.cell[this.indexOfCellAt(x, y)];
-	}
+
 
 	// return the cell state of adjacent cells to the cell at given position.
 	adjacentsOf( x, y ){
@@ -127,23 +136,30 @@ class Grid{
 		return adjacents.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
 	}
 
+	// return the state of a cell
+		// if it does not exist return -1.
+	cellInSpace( x, y ){
+		if ( !this.cellExist(x, y) ) return -1; 
+		return this.cell[this.indexOfCellInSpace(x, y)];
+	}
+
 	// return the position considering the grid an matrix of a cell in a given position.
 		// This function consider a cell as an element in space
 		// This function return the position on the buffer[x,y] of a cell in a given position.
 		/*
 			Example: cell at position 8,0 on canvas is the cell at position 1 on buffer.
 		 */ 
-	indexOfCellAt( x, y ){
-		let final_x = Math.floor(x/this.cellWidth);
-		let final_y = Math.floor(y/this.cellHeight);
+	indexOfCellInSpace( x, y ){
+		let final_x = Math.floor(x/this.cell_width);
+		let final_y = Math.floor(y/this.cell_height);
 		return this.index(final_x, final_y);
 	}
 
-	// Return the same as cellAt function, but as an 2d coordinate.
-	positionOfCellAt( x, y ){
+	// Return the same as cellInSpace function, but as an 2d coordinate.
+	positionOfCellInSpace( x, y ){
 		return { 
-			x: Math.floor(x/this.cellWidth),
-			y: Math.floor(y/this.cellHeight)
+			x: Math.floor(x/this.cell_width),
+			y: Math.floor(y/this.cell_height)
 		}
 	}
 }
