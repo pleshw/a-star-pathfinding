@@ -23,8 +23,8 @@ class A_StarNode {
 	constructor( pos, g = 0, h = 0 ){
 		this.x = pos.x;
 		this.y = pos.y;
-		this.g = Math.floor(g); // distance from this node to initial point
-		this.h = Math.floor(h); // heuristic from this node to goal
+		this.g = g; // distance from this node to initial point
+		this.h = h; // heuristic from this node to goal
 		this.f = this.g + this.h;
 	}
 }
