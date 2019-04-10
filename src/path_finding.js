@@ -77,19 +77,23 @@ class A_StarGrid extends Grid{
 		return neighbors;
 	}
 
+	// Get all neighbor nodes from an element sorted by fscore
 	neighborsSorted( position ){
 		return this.neighbors(position).sort(byFScore);
 	}
 
+	// Get the neighbor node with lower fscore given a position
 	lowestFScoreNeighbor( position ){
 		return this.neighborsSorted(position)[0];
 	}
 
+	// Get the element from openList with the lowest fscore
 	lowestFScoreInOpenList(){
 		let tmp = Array.from(this.openList.values());
 		return tmp.sort(byFScore)[0];
 	}
 
+	// return an index given a position
 	mapIndex( position ){
 		return this.index(position.x, position.y);
 	}
@@ -112,6 +116,13 @@ function A_Star(initialPosition, finalPosition, grid) {
 
 		if (current.x == pathGrid.goal.x && current.y == pathGrid.goal.y){
 			path.set( pathGrid.mapIndex(current), current);
+
+			// pathGrid.openList.forEach( element =>{
+			// 	gameContext.fillStyle = "rgba(95, 95, 95, .3)";
+			// 	gameContext.fillRect(
+			// 		cellWidth*element.x, cellHeight*element.y,
+			// 		cellWidth, cellHeight);
+			// });
 			return path;
 		}
 

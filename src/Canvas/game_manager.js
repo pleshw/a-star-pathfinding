@@ -91,8 +91,8 @@ function Setup(){
 	// Instantiating the new player variables.
 	const maxHp = 20; 
 	const maxSp = 5;
-	const width = 22
-	const height =  22; 
+	const width = 18
+	const height = 16; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
 		0, 0, 
@@ -116,7 +116,7 @@ function Draw() {
 	gameContext.fillStyle = "#cfe";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
-		player.width-12, player.height-15);
+		player.width, player.height);
 
 	if (drawCursor && mouseOnCanvas){
 		let finalPadding = cellPadding;
@@ -127,8 +127,9 @@ function Draw() {
 
 		// On mouse down finds the way to the cursor
 		if (mousedown){
-			gameContext.fillStyle = "rgba(162, 132, 232, 0.3)";
-			A_Star(player.position, selectedCell, grid).forEach( element =>{
+			v = A_Star(player.position, selectedCell, grid)
+			gameContext.fillStyle = "rgba(142, 32, 58, .6)";
+			v.forEach( element =>{
 				gameContext.fillRect(
 					cellWidth*element.x, cellHeight*element.y,
 					cellWidth, cellHeight);
