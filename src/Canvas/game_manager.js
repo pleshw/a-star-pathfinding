@@ -79,8 +79,8 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 5;
-	let gridCols = 5;
+	let gridRows = 19;
+	let gridCols = 30;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
@@ -127,7 +127,7 @@ function Draw() {
 
 		// On mouse down finds the way to the cursor
 		if (mousedown){
-			gameContext.fillStyle = "red";
+			gameContext.fillStyle = "darkred";
 			A_Star(player.position, selectedCell, grid).forEach( element =>{
 				gameContext.fillRect(
 					cellWidth*element.x, cellHeight*element.y,
@@ -166,7 +166,7 @@ function clearGrid(){
 }
 // Draw the grid cols and rows at grid canvas.
 function drawGrid(){
-	gridContext.strokeStyle = "white";
+	gridContext.strokeStyle = "lightgrey";
 	for( let x = 0; x < grid.cols+1; x++ ){
 		gridContext.moveTo(x * cellWidth, 0);
 		gridContext.lineTo(x * cellWidth, grid.rows*cellHeight );
