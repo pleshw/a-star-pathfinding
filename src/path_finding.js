@@ -1,5 +1,4 @@
 // This file provides pathfinding algorithms for my game purposes.
-// This A* algorithm was made based on a code train algorithm
 
 
 function removeFromArray( arr, elmnt ){
@@ -107,15 +106,14 @@ function A_Star(initialPosition, finalPosition, grid) {
 	let current = pathGrid.lowestFScoreNeighbor(initialPosition);
 
 
-	for(let i = 0; i < 25; i++){
+	for(let i = 0; i < 355; i++){
 		// current cell recieve the lowest fscore neighbor in openset
-		current = pathGrid.lowestFScoreNeighbor(pathGrid.lowestFScoreInOpenList());
+		current = pathGrid.lowestFScoreInOpenList();
 
-		// if current is the goal stop
-		// console.log(current.x + " " + current.y);
-		// console.log(pathGrid.goal.x + " " + pathGrid.goal.y);
-		if (current.x == pathGrid.goal.x && current.y == pathGrid.goal.y)
+		if (current.x == pathGrid.goal.x && current.y == pathGrid.goal.y){
+			path.set( pathGrid.mapIndex(current), current);
 			return path;
+		}
 
 		// else then remove the current place to the open list and add to the closed
 		pathGrid.openList.delete(pathGrid.mapIndex(current));
@@ -143,12 +141,10 @@ function A_Star(initialPosition, finalPosition, grid) {
 
 			// after that you have the best path to go
 			current.g = tmp_GScore;
-			path.set( pathGrid.mapIndex(neighbor), current);
+			path.set( pathGrid.mapIndex(current), current);
 		}); // for each
 
 	}
-
-	return path;
 }
 
 

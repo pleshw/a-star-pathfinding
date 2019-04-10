@@ -128,8 +128,11 @@ function Draw() {
 		// On mouse down finds the way to the cursor
 		if (mousedown){
 			gameContext.fillStyle = "red";
-			console.log(A_Star(player.position, selectedCell, grid))
-
+			A_Star(player.position, selectedCell, grid).forEach( element =>{
+				gameContext.fillRect(
+					cellWidth*element.x, cellHeight*element.y,
+					cellWidth, cellHeight);
+			});
 		}
 		
 		// Get the margins of the fill -> padding% of cell width and height.
