@@ -64,7 +64,7 @@ class A_StarGrid extends Grid{
 	}
 
 	get canContinue(){
-		return this.open_list.length > 0;
+		return this.open_list.size >= 0;
 	}
 
 	// return all adjacents nodes in a position
@@ -106,7 +106,7 @@ function A_Star(initialPosition, finalPosition, grid) {
 	let current = pathGrid.lowestFScoreNeighbor(initialPosition);
 
 
-	for(let i = 0; i < 355; i++){
+	while(pathGrid.canContinue){
 		// current cell recieve the lowest fscore neighbor in openset
 		current = pathGrid.lowestFScoreInOpenList();
 
@@ -143,7 +143,6 @@ function A_Star(initialPosition, finalPosition, grid) {
 			current.g = tmp_GScore;
 			path.set( pathGrid.mapIndex(current), current);
 		}); // for each
-
 	}
 }
 
