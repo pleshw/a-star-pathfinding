@@ -116,7 +116,7 @@ function Draw() {
 	gameContext.fillStyle = "#cfe";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
-		player.width, player.height);
+		player.width-12, player.height-15);
 
 	if (drawCursor && mouseOnCanvas){
 		let finalPadding = cellPadding;
