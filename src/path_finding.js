@@ -20,9 +20,10 @@ function byFScore(a, b){
 }
 
 class A_StarNode {
-	constructor( pos, g = 0, h = 0 ){
+	constructor( pos, index, g = 0, h = 0 ){
 		this.x = pos.x;
 		this.y = pos.y;
+		this.index = index;
 		this.g = g; // distance from this node to initial point
 		this.h = h; // heuristic from this node to goal
 		this.f = this.g + this.h;
@@ -37,6 +38,8 @@ class A_StarGrid extends Grid{
 		this.open_list = new Map();
 		this.closed_list = new Map();
 
+		this.copy(grid);
+
 		// the cell cost evaluating variables
 		this.node = new Array(this.rows);
 		for( let i = 0; i < this.node.length; i++ )
@@ -46,7 +49,9 @@ class A_StarGrid extends Grid{
 			for( let j = 0; j < this.cols; j++ ){
 				let tmp_pos = {x: j, y: i};
 				// store all the nodes with its heuristic values
-				this.node[i][j] = new A_StarNode( tmp_pos, 0, heuristicEvaluate(tmp_pos, end) );
+				this.node[i][j] = new A_StarNode( tmp_pos, 
+												  this.mapIndex(tmp_pos), 
+												  0, heuristicEvaluate(tmp_pos, end) );
 				// get the goal node
 				if (tmp_pos.x == end.x && tmp_pos.y == end.y) this.goal = this.node[i][j];
 			}
@@ -70,6 +75,18 @@ class A_StarGrid extends Grid{
 	// return all adjacents nodes in a position
 	neighbors( position ){
 		let adjacents = this.positionOfAdjacents(position.x, position.y);
+		let neighbors = [];
+		adjacents.forEach((element)=>{
+			neighbors.push(this.node[element.y][element.x]);
+		});
+		return neighbors;
+	}
+
+	// return all adjacents nodes in a position
+	neighbors( position, diagonals = true ){
+		let adjacents = 
+			diagonals ? this.positionOfAdjacents(position.x, position.y)
+			: this.positionOfAdjacentsWithNoDiagonals(position.x, position.y);
 		let neighbors = [];
 		adjacents.forEach((element)=>{
 			neighbors.push(this.node[element.y][element.x]);
@@ -101,7 +118,7 @@ class A_StarGrid extends Grid{
 }
 
 function A_Star(initialPosition, finalPosition, grid) {
-	if (initialPosition.x == finalPosition.x && initialPosition.y == finalPosition.y) return;
+	if (initialPosition.x == finalPosition.x && initialPosition.y == finalPosition.y) return -1;
 
 	let pathGrid = new A_StarGrid( grid, initialPosition, finalPosition );
 
@@ -109,10 +126,16 @@ function A_Star(initialPosition, finalPosition, grid) {
 
 	let current = pathGrid.lowestFScoreNeighbor(initialPosition);
 
+	let checkDiagonals = true;
+	pathGrid.neighbors(current, true).forEach(element=>{
+		if (!pathGrid.isFree(element.x, element.y)) checkDiagonals = false;
+	});
 
 	while(pathGrid.canContinue){
 		// current cell recieve the lowest fscore neighbor in openset
 		current = pathGrid.lowestFScoreInOpenList();
+
+		if (current == undefined) return -1;
 
 		if (current.x == pathGrid.goal.x && current.y == pathGrid.goal.y){
 			path.set( pathGrid.mapIndex(current), current);
@@ -126,12 +149,12 @@ function A_Star(initialPosition, finalPosition, grid) {
 			return path;
 		}
 
-		// else then remove the current place to the open list and add to the closed
+		// else then remove the current place from open list and add to the closed
 		pathGrid.openList.delete(pathGrid.mapIndex(current));
 		pathGrid.closedList.set(pathGrid.mapIndex(current), current);
 
-
-		pathGrid.neighbors({x: current.x, y: current.y}).forEach( neighbor =>{
+		// search for the best move
+		pathGrid.neighbors(current, checkDiagonals).forEach( neighbor =>{
 			if (pathGrid.closedList.has(pathGrid.mapIndex(neighbor)))
 				return;
 
@@ -143,10 +166,11 @@ function A_Star(initialPosition, finalPosition, grid) {
 				// put it on openList 
 				// if the gscore is greater then just ignore.
 			 */
-			if(!pathGrid.openList.get(pathGrid.mapIndex(neighbor)))
+			if(!pathGrid.openList.get(pathGrid.mapIndex(neighbor)) && pathGrid.isFree(neighbor.x, neighbor.y))
 				pathGrid.openList.set(pathGrid.mapIndex(neighbor), neighbor);
 			else if(tmp_GScore >= neighbor.g)
 				return;
+			else return;
 			// console.log(pathGrid.lowestFScoreInOpenList(pathGrid.openList));
 			// console.log(pathGrid.closedList);
 
@@ -155,8 +179,8 @@ function A_Star(initialPosition, finalPosition, grid) {
 			path.set( pathGrid.mapIndex(current), current);
 		}); // for each
 	}
+	return -1;
 }
-
 
 
 // gameContext.fillStyle = "red";

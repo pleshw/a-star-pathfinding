@@ -21,9 +21,6 @@ let mousedown = false;
 
 let player;
 
-
-
-
 window.addEventListener("load", function(){
 	gameCanvas = document.getElementById("gameCanvas");
 	gameContext = gameCanvas.getContext('2d');
@@ -62,7 +59,7 @@ window.addEventListener("load", function(){
 
 
 	Setup();
-	setInterval( function(){Draw();}, 1000/120 );
+	setInterval( function(){Draw();}, 1000/12 );
 });
 
 
@@ -79,12 +76,15 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 33;
-	let gridCols = 33;
+	let gridRows = 42;
+	let gridCols = 43;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	drawGrid();
+
+	for( let y = 2; y < grid.rows; y++ )
+		grid.block(5, y);
 
 	// remove the default cursor
 	gameCanvas.style.cursor = "none";
@@ -109,6 +109,17 @@ function Draw() {
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+
+	for(let y = 0; y < grid.rows; y++)
+		for(let x = 0; x < grid.rows; x++){
+			if (grid.isBlocked(x, y)){
+				gameContext.fillStyle = "lightgrey";
+				gameContext.fillRect(
+					x*cellWidth, y*cellHeight,
+					cellWidth, cellHeight);
+			}
+		}
+
 	// Get the player drawing position.
 	playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
 	playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
@@ -126,14 +137,19 @@ function Draw() {
 		let selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
 
 		// On mouse down finds the way to the cursor
-		if (mousedown){
-			v = A_Star(player.position, selectedCell, grid)
-			gameContext.fillStyle = "rgba(142, 32, 58, .6)";
-			v.forEach( element =>{
-				gameContext.fillRect(
-					cellWidth*element.x, cellHeight*element.y,
-					cellWidth, cellHeight);
-			});
+		if (mousedown && grid.isFree(selectedCell.x, selectedCell.y)){
+			let v = A_Star(player.position, selectedCell, grid);
+			if (v != -1) {
+				gameContext.fillStyle = "rgba(142, 32, 58, .6)";
+				v.forEach( element =>{
+					gameContext.fillRect(
+						cellWidth*element.x, cellHeight*element.y,
+						cellWidth, cellHeight);
+				});
+				player.x = Array.from(v)[1][1].x;
+				player.y = Array.from(v)[1][1].y;
+			}
+			// console.log(Array.from(v)[1][1]);
 		}
 		
 		// Get the margins of the fill -> padding% of cell width and height.

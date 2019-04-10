@@ -48,6 +48,13 @@ class Grid{
 		return this._cols;
 	}
 
+	copy( clone ){
+		for(let y = 0; y < this.rows; y++)
+			for(let x = 0; x < this.rows; x++){
+				this.cell[this.index(x,y)] = clone.cell[grid.index(x,y)];
+			}
+	}
+
 	get cellWidth(){
 		return this.cell_width;
 	}
@@ -98,6 +105,28 @@ class Grid{
 		return false;
 	}
 
+	free( x, y ){
+		if (!this.isFree(x, y)){
+			if (this.isBlocked(x, y)) this.cell[this.index(x,y)] -= BLOCKED;
+			if (this.isOcuppied(x, y)) this.cell[this.index(x,y)] -= OCCUPIED;
+			this.cell[this.index(x,y)] += FREE;
+			return true;
+		}
+
+		return false;
+	}
+
+	block( x, y ){
+		if (!this.isBlocked(x, y)){
+			if (this.isFree(x, y)) this.cell[this.index(x,y)] -= FREE;
+			if (this.isOcuppied(x, y)) this.cell[this.index(x,y)] -= OCCUPIED;
+			this.cell[this.index(x,y)] += BLOCKED;
+			return true;
+		}
+
+		return false;
+	}
+
 	// return true if the cell is valid
 	cellExist( x, y ){
 		if (x < 0 || y < 0) return false;
@@ -132,6 +161,17 @@ class Grid{
 			 {x: x-1, y: y-1},
 			 {x: x+1, y: y+1},
 			 {x: x-1, y: y+1}
+		];
+		return adjacents.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
+	}
+
+	// return the position of any valid cell that is adjacent to the cell at given position.
+	positionOfAdjacentsWithNoDiagonals( x, y ){
+		let adjacents = [
+			 {x: x,   y: y-1},
+			 {x: x+1, y: y},
+			 {x: x,   y: y+1},
+			 {x: x-1, y: y}
 		];
 		return adjacents.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
 	}
