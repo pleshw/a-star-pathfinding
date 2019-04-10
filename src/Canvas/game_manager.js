@@ -79,8 +79,8 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 19;
-	let gridCols = 30;
+	let gridRows = 33;
+	let gridCols = 33;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
@@ -91,8 +91,8 @@ function Setup(){
 	// Instantiating the new player variables.
 	const maxHp = 20; 
 	const maxSp = 5;
-	const width = 18
-	const height = 16; 
+	const width = 18;
+	const height = 8; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
 		0, 0, 
