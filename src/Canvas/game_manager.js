@@ -127,7 +127,7 @@ function Draw() {
 
 		// On mouse down finds the way to the cursor
 		if (mousedown){
-			gameContext.fillStyle = "darkred";
+			gameContext.fillStyle = "rgba(232, 132, 132, 0.3)";
 			A_Star(player.position, selectedCell, grid).forEach( element =>{
 				gameContext.fillRect(
 					cellWidth*element.x, cellHeight*element.y,
