@@ -16,3 +16,27 @@ function distance2d( x1, y1, x2, y2 ){
 	let b = y2 - y1;
 	return Math.sqrt( (a**2) + (b**2) );
 }
+
+
+class Stack{
+	constructor(){
+		this.arr = [];
+	}
+	get top(){
+		return this.arr[0];
+	}
+	pop(){
+		let tmp = this.arr[0];
+		this.arr.pop();
+		return tmp;
+	}
+	push(v){
+		this.arr.push(v);
+	}
+	size(){
+		return this.arr.size();
+	}
+	empty(){
+		return this.arr.size() <= 0;
+	}
+}

@@ -8,9 +8,10 @@ let gridCanvas;
 let gridContext;
 
 let grid;
-let cellWidth, cellHeigth;
+let cellWidth, cellHeight;
 let cellPadding = 20; // percentage
 
+let mouseOnCanvas = false;
 let onCanvasMousePosition;
 let drawCursor = false;
 let cursorImg = new Image();
@@ -41,6 +42,7 @@ window.addEventListener("load", function(){
 	});
 
 	gameCanvas.addEventListener("mouseover", _event => {
+		mouseOnCanvas = true;
 		drawCursor = true;
 	});
 	gameCanvas.addEventListener("mouseout", _event => {
@@ -77,11 +79,11 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 20;
-	let gridCols = 32;
+	let gridRows = 5;
+	let gridCols = 5;
 	cellWidth = gridCanvas.width/gridCols;
-	cellHeigth = gridCanvas.height/gridRows;
-	grid = new Grid( gridRows, gridCols, cellWidth, cellHeigth );
+	cellHeight = gridCanvas.height/gridRows;
+	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	drawGrid();
 
 	// remove the default cursor
@@ -109,44 +111,48 @@ function Draw() {
 
 	// Get the player drawing position.
 	playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
-	playerVerticalDrawing = ((2*cellHeigth*player.position.y) + cellHeigth  - player.height)/2;
+	playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
 	// Draw the player at the center of the cell.
 	gameContext.fillStyle = "#cfe";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
 		player.width, player.height);
 
-	if (drawCursor){
-		// Draw the cursor.
-		gameContext.drawImage(cursorImg, 
-			onCanvasMousePosition.x, onCanvasMousePosition.y,
-			12, 12);
-
+	if (drawCursor && mouseOnCanvas){
 		let finalPadding = cellPadding;
 		if (mousedown) finalPadding += (cellPadding * (25/100));
 
 		// Paint the cell that is under the cursor.
 		let selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
+
+		// On mouse down finds the way to the cursor
+		if (mousedown){
+			gameContext.fillStyle = "red";
+			console.log(A_Star(player.position, selectedCell, grid))
+
+		}
+		
 		// Get the margins of the fill -> padding% of cell width and height.
 		let selectedCellFillMarginHorizontal = cellWidth*(finalPadding/100);
-		let selectedCellFillMarginVertical = cellHeigth*(finalPadding/100);
+		let selectedCellFillMarginVertical = cellHeight*(finalPadding/100);
 		// Get the fill area -> (100-(padding*2))% of width and height -> center
 		let selectedCellFillWidth = cellWidth*((100-(finalPadding*2))/100);
-		let selectedCellFillHeight = cellHeigth*((100-(finalPadding*2))/100);
+		let selectedCellFillHeight = cellHeight*((100-(finalPadding*2))/100);
 		// Get the fill position considering the margin
 		let selectedCellFillPosition = {
 			x: selectedCellFillMarginHorizontal + (cellWidth*selectedCell.x),
-			y: selectedCellFillMarginVertical + (cellHeigth*selectedCell.y),
+			y: selectedCellFillMarginVertical + (cellHeight*selectedCell.y),
 		}
 		// Paint
-		gameContext.fillStyle = "rgba(247, 189, 143, 0.5)";
+		gameContext.fillStyle = "rgba(149, 189, 247, 0.5)";
 		gameContext.fillRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			selectedCellFillWidth, selectedCellFillHeight);
-		
-		if (mousedown){
-			A_Star(player.position, selectedCell, grid);
-		}
+
+		// Draw the cursor.
+		gameContext.drawImage(cursorImg, 
+			onCanvasMousePosition.x, onCanvasMousePosition.y,
+			12, 12);
 	}
 }
 
@@ -160,12 +166,12 @@ function drawGrid(){
 	gridContext.strokeStyle = "white";
 	for( let x = 0; x < grid.cols+1; x++ ){
 		gridContext.moveTo(x * cellWidth, 0);
-		gridContext.lineTo(x * cellWidth, grid.rows*cellHeigth );
+		gridContext.lineTo(x * cellWidth, grid.rows*cellHeight );
 	}
 	gridContext.stroke();
 	for( let y = 0; y < grid.rows+1; y++ ){
-		gridContext.moveTo(0, y * cellHeigth);
-		gridContext.lineTo(grid.cols*cellWidth, y * cellHeigth );
+		gridContext.moveTo(0, y * cellHeight);
+		gridContext.lineTo(grid.cols*cellWidth, y * cellHeight );
 	}
 	gridContext.stroke();
 }
