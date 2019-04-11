@@ -81,6 +81,11 @@ function Setup(){
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
+	
+	for(let y = 0; y < 19; y++){grid.block(13, y);}
+
+	for(let y = 0; y < 19; y++){grid.block(21, y);}
+
 	// drawGrid();
 
 	// remove the default cursor
