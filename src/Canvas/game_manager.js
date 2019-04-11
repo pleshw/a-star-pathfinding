@@ -52,6 +52,12 @@ window.addEventListener("load", function(){
 	gameCanvas.addEventListener("mouseup", _event => {
 		mousedown = false;
 	});
+	gameCanvas.addEventListener("touchstart", _event => {
+		mousedown = true;
+	});
+	gameCanvas.addEventListener("touchend", _event => {
+		mousedown = false;
+	});
 
 	gameCanvas.addEventListener("mousemove", _event => {
 		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
