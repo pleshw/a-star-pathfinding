@@ -54,6 +54,8 @@ window.addEventListener("load", function(){
 	});
 	gameCanvas.addEventListener("touchstart", _event => {
 		mousedown = true;
+		drawCursor = true;
+		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
 	});
 	gameCanvas.addEventListener("touchend", _event => {
 		mousedown = false;
