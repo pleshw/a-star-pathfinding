@@ -9,7 +9,7 @@ let gridContext;
 
 let grid;
 let cellWidth, cellHeight;
-let cellPadding = 20; // percentage
+let cellPadding = 1; // percentage
 
 let mouseOnCanvas = false;
 let onCanvasMousePosition;
@@ -59,7 +59,7 @@ window.addEventListener("load", function(){
 
 
 	Setup();
-	setInterval( function(){Draw();}, 1000/12 );
+	setInterval( function(){Draw();}, 1000/30 );
 });
 
 
@@ -76,15 +76,12 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 42;
-	let gridCols = 43;
+	let gridRows = 142;
+	let gridCols = 143;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
-	drawGrid();
-
-	for( let y = 6; y < grid.rows; y++ )
-		grid.block(5, y);
+	// drawGrid();
 
 	// remove the default cursor
 	gameCanvas.style.cursor = "none";
@@ -140,11 +137,24 @@ function Draw() {
 		if (mousedown && grid.isFree(selectedCell.x, selectedCell.y)){
 			let v = A_Star(player.position, selectedCell, grid);
 			if (v != -1) {
-				gameContext.fillStyle = "rgba(142, 32, 58, .6)";
-				v.forEach( element =>{
-					gameContext.fillRect(
-						cellWidth*element.x, cellHeight*element.y,
-						cellWidth, cellHeight);
+				gameContext.setLineDash([]);
+				gameContext.beginPath();
+				gameContext.strokeStyle = "rgba(142, 32, 58, .6)";
+				v.forEach( (element, index, array) =>{
+					if (array[index+1]){			
+						gameContext.moveTo(
+							cellWidth*(element.x)+(cellWidth/2), 
+							cellHeight*(element.y)+(cellHeight/2));
+						gameContext.lineTo(
+							cellWidth*array[index+1].x+(cellWidth/2), 
+							cellHeight*array[index+1].y+(cellHeight/2));
+					}
+					gameContext.endPath;
+					// gameContext.fillStyle = "rgba(142, 32, 58, .6)";
+					// gameContext.fillRect(
+					// 	cellWidth*element.x, cellHeight*element.y,
+					// 	cellWidth, cellHeight);
+					gameContext.stroke();
 				});
 				player.x = v[v.length-2].x;
 				player.y = v[v.length-2].y;
@@ -164,8 +174,10 @@ function Draw() {
 			y: selectedCellFillMarginVertical + (cellHeight*selectedCell.y),
 		}
 		// Paint
-		gameContext.fillStyle = "rgba(149, 189, 247, 0.5)";
-		gameContext.fillRect(
+		gameContext.beginPath();
+		gameContext.strokeStyle = "white";
+		gameContext.setLineDash([((selectedCellFillWidth*2) + (selectedCellFillHeight*2))/4, 4]);
+		gameContext.strokeRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			selectedCellFillWidth, selectedCellFillHeight);
 
