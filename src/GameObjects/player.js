@@ -15,6 +15,8 @@ class Player extends GameObject{
 
 		this.moves = 2;
 		this.maxMoves = 5;
+
+		this.path = [];
 	}
 
 	get movesLeft(){

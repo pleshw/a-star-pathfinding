@@ -83,7 +83,7 @@ function Setup(){
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	drawGrid();
 
-	for( let y = 2; y < grid.rows; y++ )
+	for( let y = 6; y < grid.rows; y++ )
 		grid.block(5, y);
 
 	// remove the default cursor
@@ -95,7 +95,7 @@ function Setup(){
 	const height = 8; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
-		0, 0, 
+		0, 12, 
 		maxHp, maxSp, 
 		width, height
 	);
@@ -146,8 +146,8 @@ function Draw() {
 						cellWidth*element.x, cellHeight*element.y,
 						cellWidth, cellHeight);
 				});
-				player.x = Array.from(v)[1][1].x;
-				player.y = Array.from(v)[1][1].y;
+				player.x = v[v.length-2].x;
+				player.y = v[v.length-2].y;
 			}
 			// console.log(Array.from(v)[1][1]);
 		}

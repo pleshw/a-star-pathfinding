@@ -138,15 +138,14 @@ function A_Star(initialPosition, finalPosition, grid) {
 		if (current == undefined) return -1;
 
 		if (current.x == pathGrid.goal.x && current.y == pathGrid.goal.y){
-			path.set( pathGrid.mapIndex(current), current);
-
-			// pathGrid.openList.forEach( element =>{
-			// 	gameContext.fillStyle = "rgba(95, 95, 95, .3)";
+			// gameContext.fillStyle = "rgba(195, 195, 195, .3)";
+			// pathGrid.openList.forEach( element =>{				
 			// 	gameContext.fillRect(
 			// 		cellWidth*element.x, cellHeight*element.y,
 			// 		cellWidth, cellHeight);
 			// });
-			return path;
+
+			return backtrack(path, current);
 		}
 
 		// else then remove the current place from open list and add to the closed
@@ -155,7 +154,7 @@ function A_Star(initialPosition, finalPosition, grid) {
 
 		// search for the best move
 		pathGrid.neighbors(current, checkDiagonals).forEach( neighbor =>{
-			if (pathGrid.closedList.has(pathGrid.mapIndex(neighbor)))
+			if (pathGrid.closedList.has(pathGrid.mapIndex(neighbor)) || pathGrid.isBlocked(neighbor.x, neighbor.y))
 				return;
 
 			let tmp_GScore = current.g + 1; // current gscore + the distance from current to neighbor.
@@ -166,22 +165,32 @@ function A_Star(initialPosition, finalPosition, grid) {
 				// put it on openList 
 				// if the gscore is greater then just ignore.
 			 */
-			if(!pathGrid.openList.get(pathGrid.mapIndex(neighbor)) && pathGrid.isFree(neighbor.x, neighbor.y))
+			if(!pathGrid.openList.get(pathGrid.mapIndex(neighbor)))
 				pathGrid.openList.set(pathGrid.mapIndex(neighbor), neighbor);
 			else if(tmp_GScore >= neighbor.g)
 				return;
-			else return;
 			// console.log(pathGrid.lowestFScoreInOpenList(pathGrid.openList));
 			// console.log(pathGrid.closedList);
 
 			// after that you have the best path to go
 			current.g = tmp_GScore;
-			path.set( pathGrid.mapIndex(current), current);
+			path.set( neighbor, current);
 		}); // for each
 	}
 	return -1;
 }
 
+function backtrack( path, current ){
+	// console.log(Array.from(path));
+	let final = new Array();
+	final.push( current );
+	while (path.has(current)){
+		current = path.get(current);
+		final.push(current);
+	}
+
+	return final;
+}
 
 // gameContext.fillStyle = "red";
 // gameContext.fillRect(
