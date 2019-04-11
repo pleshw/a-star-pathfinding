@@ -76,8 +76,8 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 142;
-	let gridCols = 143;
+	let gridRows = 22;
+	let gridCols = 54;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
@@ -88,7 +88,7 @@ function Setup(){
 	// Instantiating the new player variables.
 	const maxHp = 20; 
 	const maxSp = 5;
-	const width = 18;
+	const width = 14;
 	const height = 8; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
@@ -176,7 +176,6 @@ function Draw() {
 		// Paint
 		gameContext.beginPath();
 		gameContext.strokeStyle = "white";
-		gameContext.setLineDash([((selectedCellFillWidth*2) + (selectedCellFillHeight*2))/4, 4]);
 		gameContext.strokeRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			selectedCellFillWidth, selectedCellFillHeight);
