@@ -41,29 +41,30 @@ window.addEventListener("load", function(){
 	gameCanvas.addEventListener("mouseover", _event => {
 		mouseOnCanvas = true;
 		drawCursor = true;
-	});
+	}, {passive: true});
 	gameCanvas.addEventListener("mouseout", _event => {
 		drawCursor = false;
-	});
+	}, {passive: true});
 
 	gameCanvas.addEventListener("mousedown", _event => {
 		mousedown = true;
-	});
+	}, {passive: true});
 	gameCanvas.addEventListener("mouseup", _event => {
 		mousedown = false;
-	});
+	}, {passive: true});
 	gameCanvas.addEventListener("touchstart", _event => {
 		mousedown = true;
 		drawCursor = true;
-		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
-	});
-	gameCanvas.addEventListener("touchend", _event => {
-		mousedown = false;
-	});
+		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
+	},{passive: true});
 
 	gameCanvas.addEventListener("mousemove", _event => {
 		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
-	});
+	}, {passive: true});
+	gameCanvas.addEventListener("touchmove", _event => {
+		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
+	}, {passive: true});
+
 
 
 	Setup();
