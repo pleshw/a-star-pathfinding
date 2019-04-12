@@ -22,6 +22,9 @@ let mousedown = false;
 let player;
 
 window.addEventListener("load", function(){
+
+	document.getElementsByTagName("body")[0].style.overflow = "hidden";
+
 	gameCanvas = document.getElementById("gameCanvas");
 	gameContext = gameCanvas.getContext('2d');
 
@@ -93,8 +96,11 @@ function Setup(){
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	
 	// make 2 barriers.
+	for(let y = 0; y < 21; y++){grid.block(11, y);}
+	for(let y = 0; y < 21; y++){grid.block(12, y);}
 	for(let y = 0; y < 19; y++){grid.block(13, y);}
 	for(let y = 0; y < 19; y++){grid.block(21, y);}
+	for(let j = 0; j < 19; j++){grid.block(22, j);}
 
 	// drawGrid();
 
@@ -131,7 +137,7 @@ function Draw() {
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
 	for(let y = 0; y < grid.rows; y++)
-		for(let x = 0; x < grid.rows; x++){
+		for(let x = 0; x < grid.cols; x++){
 			if (grid.isBlocked(x, y)){
 				gameContext.fillStyle = "lightgrey";
 				gameContext.fillRect(

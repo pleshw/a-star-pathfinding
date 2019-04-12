@@ -50,7 +50,7 @@ class Grid{
 
 	copy( clone ){
 		for(let y = 0; y < this.rows; y++)
-			for(let x = 0; x < this.rows; x++){
+			for(let x = 0; x < this.cols; x++){
 				this.cell[this.index(x,y)] = clone.cell[grid.index(x,y)];
 			}
 	}
@@ -123,7 +123,6 @@ class Grid{
 			this.cell[this.index(x,y)] += BLOCKED;
 			return true;
 		}
-
 		return false;
 	}
 
@@ -152,7 +151,7 @@ class Grid{
 
 	// return the position of any valid cell that is adjacent to the cell at given position.
 	positionOfAdjacents( x, y ){
-		let adjacents = [
+		const adjacents = [
 			 {x: x,   y: y-1},
 			 {x: x+1, y: y},
 			 {x: x,   y: y+1},
@@ -167,7 +166,7 @@ class Grid{
 
 	// return the position of any valid cell that is adjacent to the cell at given position.
 	positionOfAdjacentsWithNoDiagonals( x, y ){
-		let adjacents = [
+		const adjacents = [
 			 {x: x,   y: y-1},
 			 {x: x+1, y: y},
 			 {x: x,   y: y+1},
@@ -190,8 +189,8 @@ class Grid{
 			Example: cell at position 8,0 on canvas is the cell at position 1 on buffer.
 		 */ 
 	indexOfCellInSpace( x, y ){
-		let final_x = Math.floor(x/this.cell_width);
-		let final_y = Math.floor(y/this.cell_height);
+		const final_x = Math.floor(x/this.cell_width);
+		const final_y = Math.floor(y/this.cell_height);
 		return this.index(final_x, final_y);
 	}
 
