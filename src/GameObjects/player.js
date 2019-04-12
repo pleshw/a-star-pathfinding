@@ -20,7 +20,11 @@ class Player extends GameObject{
 	}
 
 	get movesLeft(){
-		return this.moves;
+		return this.path.length;
+	}
+
+	get nextStep(){
+		return this.path[this.movesLeft-2];
 	}
 
 	endTurn(){
@@ -32,13 +36,10 @@ class Player extends GameObject{
 		return false;
 	}
 
-	move( bitOfMovement ){
-		if (!this.canMove()) return false;
-		this.moves--; 
-		if (isBitOn(bitOfMovement, TOP)) this.y--;
-		if (isBitOn(bitOfMovement, RIGHT)) this.x++;
-		if (isBitOn(bitOfMovement, BOTTOM)) this.y++;
-		if (isBitOn(bitOfMovement, LEFT)) this.x--;
-
+	move(){
+		if (!this.movesLeft || this.movesLeft <= 1) return;
+		this.x = this.nextStep.x;
+		this.y = this.nextStep.y;
+		this.path.pop();
 	}
 }

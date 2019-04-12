@@ -9,12 +9,12 @@ let gridContext;
 
 let grid;
 let cellWidth, cellHeight;
-let cellPadding = 1; // percentage
 
 let mouseOnCanvas = false;
 let onCanvasMousePosition;
+let mouseReady = false;
 let drawCursor = false;
-let cursorImg = new Image();
+const cursorImg = new Image();
 
 let keydown = new Map();
 let mousedown = false;
@@ -31,40 +31,41 @@ window.addEventListener("load", function(){
 	gridCanvas = document.getElementById("gridCanvas");
 	gridContext = gridCanvas.getContext('2d');
 
-	addEventListener("keydown", _target => {
-		keydown[_target.key] = true;
-	});
-	addEventListener("keyup", _target => {
-		keydown[_target.key] = false;
-	});
+	// addEventListener("keydown", _target => {
+	// 	keydown[_target.key] = true;
+	// });
+	// addEventListener("keyup", _target => {
+	// 	keydown[_target.key] = false;
+	// });
 
 	gameCanvas.addEventListener("mouseover", _event => {
 		mouseOnCanvas = true;
-		drawCursor = true;
-	}, {passive: true});
+	});
 	gameCanvas.addEventListener("mouseout", _event => {
-		drawCursor = false;
-	}, {passive: true});
+		mouseOnCanvas = false;
+		if (mouseOnCanvas) mouseReady = false;
+	});
 
 	gameCanvas.addEventListener("mousedown", _event => {
 		mousedown = true;
-	}, {passive: true});
+	});
 	gameCanvas.addEventListener("mouseup", _event => {
 		mousedown = false;
-	}, {passive: true});
+	});
+
+	gameCanvas.addEventListener("mousemove", _event => {
+		if (mouseOnCanvas) mouseReady = true;
+		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
+	},);
+
 	gameCanvas.addEventListener("touchstart", _event => {
 		mousedown = true;
 		drawCursor = true;
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	},{passive: true});
-
-	gameCanvas.addEventListener("mousemove", _event => {
-		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
-	}, {passive: true});
 	gameCanvas.addEventListener("touchmove", _event => {
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	}, {passive: true});
-
 
 
 	Setup();
@@ -85,14 +86,14 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	let gridRows = 22;
-	let gridCols = 54;
+	const gridRows = 22;
+	const gridCols = 54;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	
+	// make 2 barriers.
 	for(let y = 0; y < 19; y++){grid.block(13, y);}
-
 	for(let y = 0; y < 19; y++){grid.block(21, y);}
 
 	// drawGrid();
@@ -115,11 +116,19 @@ function Setup(){
 }
 
 
+// Control the game logic { player movement, game time, monsters etc... }
+function Logic(){
+	// make the player movement
+	player.move();
+}
+
+
 // Draw the game.
 function Draw() {
+	Logic();
+
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
 
 	for(let y = 0; y < grid.rows; y++)
 		for(let x = 0; x < grid.rows; x++){
@@ -131,68 +140,57 @@ function Draw() {
 			}
 		}
 
+		// if player have moves draw the player path
+		if (player.movesLeft > 0){
+			gameContext.beginPath();
+			gameContext.strokeStyle = "rgba(142, 32, 58, .4)";
+			player.path.forEach( (element, index, array) =>{
+				if (array[index+1]){			
+					gameContext.moveTo(
+						cellWidth*(element.x)+(cellWidth/2), 
+						cellHeight*(element.y)+(cellHeight/2));
+					gameContext.lineTo(
+						cellWidth*array[index+1].x+(cellWidth/2), 
+						cellHeight*array[index+1].y+(cellHeight/2));
+				}
+				gameContext.stroke();
+			});
+			gameContext.endPath;
+		}
+
 	// Get the player drawing position.
-	playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
-	playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
+	const playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
+	const playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
 	// Draw the player at the center of the cell.
-	gameContext.fillStyle = "#cfe";
+	gameContext.fillStyle = "rgba(182, 133, 244, .9)";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
 		player.width, player.height);
 
-	if (drawCursor && mouseOnCanvas){
-		let finalPadding = cellPadding;
-		if (mousedown) finalPadding += (cellPadding * (25/100));
+	if (mouseReady){
+		// get the cell that is under the cursor.
+		const selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
 
-		// Paint the cell that is under the cursor.
-		let selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
+		// On mouse down finds the way to the cursor and change the player path
+		if (mousedown){
+			const v = A_Star(player.position, selectedCell, grid);
+			if (v != -1)
+				player.path = v;
+		}		
 
-		// On mouse down finds the way to the cursor
-		if (mousedown && grid.isFree(selectedCell.x, selectedCell.y)){
-			let v = A_Star(player.position, selectedCell, grid);
-			if (v != -1) {
-				gameContext.setLineDash([]);
-				gameContext.beginPath();
-				gameContext.strokeStyle = "rgba(142, 32, 58, .6)";
-				v.forEach( (element, index, array) =>{
-					if (array[index+1]){			
-						gameContext.moveTo(
-							cellWidth*(element.x)+(cellWidth/2), 
-							cellHeight*(element.y)+(cellHeight/2));
-						gameContext.lineTo(
-							cellWidth*array[index+1].x+(cellWidth/2), 
-							cellHeight*array[index+1].y+(cellHeight/2));
-					}
-					gameContext.endPath;
-					// gameContext.fillStyle = "rgba(142, 32, 58, .6)";
-					// gameContext.fillRect(
-					// 	cellWidth*element.x, cellHeight*element.y,
-					// 	cellWidth, cellHeight);
-					gameContext.stroke();
-				});
-				player.x = v[v.length-2].x;
-				player.y = v[v.length-2].y;
-			}
-			// console.log(Array.from(v)[1][1]);
-		}
-		
-		// Get the margins of the fill -> padding% of cell width and height.
-		let selectedCellFillMarginHorizontal = cellWidth*(finalPadding/100);
-		let selectedCellFillMarginVertical = cellHeight*(finalPadding/100);
-		// Get the fill area -> (100-(padding*2))% of width and height -> center
-		let selectedCellFillWidth = cellWidth*((100-(finalPadding*2))/100);
-		let selectedCellFillHeight = cellHeight*((100-(finalPadding*2))/100);
 		// Get the fill position considering the margin
-		let selectedCellFillPosition = {
-			x: selectedCellFillMarginHorizontal + (cellWidth*selectedCell.x),
-			y: selectedCellFillMarginVertical + (cellHeight*selectedCell.y),
+		const selectedCellFillPosition = {
+			x: (cellWidth*selectedCell.x),
+			y: (cellHeight*selectedCell.y),
 		}
+
 		// Paint
 		gameContext.beginPath();
 		gameContext.strokeStyle = "white";
 		gameContext.strokeRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
-			selectedCellFillWidth, selectedCellFillHeight);
+			cellWidth, cellHeight);
+		gameContext.endPath;
 
 		// Draw the cursor.
 		gameContext.drawImage(cursorImg, 
@@ -206,6 +204,7 @@ function Draw() {
 function clearGrid(){
 	gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 }
+
 // Draw the grid cols and rows at grid canvas.
 function drawGrid(){
 	gridContext.strokeStyle = "lightgrey";

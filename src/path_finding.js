@@ -1,17 +1,6 @@
 // This file provides pathfinding algorithms for my game purposes.
 
 
-function removeFromArray( arr, elmnt ){
-	for (var i = arr.length - 1; i >= 0; i--) {
-		if (arr[i] == elmnt) 
-			arr.splice(i, 1);
-	}
-}
-
-function heuristicEvaluate( a, b ){
-	let distance = distance2d( a.x, a.y, b.x, b.y );
-	return distance;
-}
 
 function byFScore(a, b){
 	if (a.f < b.f)  return -1;
@@ -74,7 +63,7 @@ class A_StarGrid extends Grid{
 
 	// return all adjacents nodes in a position
 	neighbors( position ){
-		let adjacents = this.positionOfAdjacents(position.x, position.y);
+		const adjacents = this.positionOfAdjacents(position.x, position.y);
 		let neighbors = [];
 		adjacents.forEach((element)=>{
 			neighbors.push(this.node[element.y][element.x]);
@@ -84,9 +73,8 @@ class A_StarGrid extends Grid{
 
 	// return all adjacents nodes in a position
 	neighbors( position, diagonals = true ){
-		let adjacents = 
-			diagonals ? this.positionOfAdjacents(position.x, position.y)
-			: this.positionOfAdjacentsWithNoDiagonals(position.x, position.y);
+		const adjacents = diagonals ? this.positionOfAdjacents(position.x, position.y)
+									: this.positionOfAdjacentsWithNoDiagonals(position.x, position.y);
 		let neighbors = [];
 		adjacents.forEach((element)=>{
 			neighbors.push(this.node[element.y][element.x]);
@@ -120,35 +108,32 @@ class A_StarGrid extends Grid{
 function A_Star(initialPosition, finalPosition, grid) {
 	if (initialPosition.x == finalPosition.x && initialPosition.y == finalPosition.y) return -1;
 
-	let pathGrid = new A_StarGrid( grid, initialPosition, finalPosition );
+	const pathGrid = new A_StarGrid( grid, initialPosition, finalPosition );
 
 	let path = new Map();
 
 	let current = pathGrid.lowestFScoreNeighbor(initialPosition);
 
-	let checkDiagonals = true;
-	pathGrid.neighbors(current, true).forEach(element=>{
-		if (!pathGrid.isFree(element.x, element.y)) checkDiagonals = false;
-	});
-
 	while(pathGrid.canContinue){
 		// current cell recieve the lowest fscore neighbor in openset
 		current = pathGrid.lowestFScoreInOpenList();
 
+		// cases where the current is a blocked cell
 		if (current == undefined) return -1;
 
-		if (current.x == pathGrid.goal.x && current.y == pathGrid.goal.y){
-			// gameContext.fillStyle = "rgba(195, 195, 195, .3)";
-			// pathGrid.openList.forEach( element =>{				
-			// 	gameContext.fillRect(
-			// 		cellWidth*element.x, cellHeight*element.y,
-			// 		cellWidth, cellHeight);
-			// });
-
+		// if the current and the goal are the same
+		if (current === pathGrid.goal)
 			return backtrack(path, current);
-		}
 
-		// else then remove the current place from open list and add to the closed
+		// Check if the neighbors are blocked
+		// to certify that the element will not pass through a diagonal set of blocks.
+		let checkDiagonals = true;
+		pathGrid.neighbors(current, true).forEach(element=>{
+			if (!pathGrid.isFree(element.x, element.y)) checkDiagonals = false;
+		});
+
+		// remove the current place from the open list and add to the closed list
+			// it means that the current place is marked as checked.
 		pathGrid.openList.delete(pathGrid.mapIndex(current));
 		pathGrid.closedList.set(pathGrid.mapIndex(current), current);
 
@@ -157,8 +142,7 @@ function A_Star(initialPosition, finalPosition, grid) {
 			if (pathGrid.closedList.has(pathGrid.mapIndex(neighbor)) || pathGrid.isBlocked(neighbor.x, neighbor.y))
 				return;
 
-			let tmp_GScore = current.g + 1; // current gscore + the distance from current to neighbor.
-			// console.log(tmp_GScore);
+			const tmp_GScore = current.g + 1; // current gscore + the distance from current to neighbor.
 
 			/*
 				// if openlist have not this neighbor then you know that this is a new node unchecked.
@@ -172,16 +156,17 @@ function A_Star(initialPosition, finalPosition, grid) {
 			// console.log(pathGrid.lowestFScoreInOpenList(pathGrid.openList));
 			// console.log(pathGrid.closedList);
 
-			// after that you have the best path to go
+			// after that you have the possible best next move to go
+				// put the neighbor to go in path
 			current.g = tmp_GScore;
-			path.set( neighbor, current);
+			path.set( neighbor, current );
 		}); // for each
 	}
 	return -1;
 }
 
+// backtrack the path with the best set of moves
 function backtrack( path, current ){
-	// console.log(Array.from(path));
 	let final = new Array();
 	final.push( current );
 	while (path.has(current)){
@@ -191,16 +176,3 @@ function backtrack( path, current ){
 
 	return final;
 }
-
-// gameContext.fillStyle = "red";
-// gameContext.fillRect(
-// 	cellWidth*current.x, cellHeight*current.y,
-// 	cellWidth, cellHeight);
-
-
-// pathGrid.openList.forEach( element =>{
-// 	gameContext.fillStyle = currec;
-// 	gameContext.fillRect(
-// 		cellWidth*element.x, cellHeight*element.y,
-// 		cellWidth, cellHeight);
-// });
