@@ -115,8 +115,8 @@ function Setup(){
 	// Instantiating the new player variables.
 	const maxHp = 20; 
 	const maxSp = 5;
-	const width = 14;
-	const height = 8; 
+	const width = 12;
+	const height = 12; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
 		0, 12, 
@@ -124,7 +124,7 @@ function Setup(){
 		width, height
 	);
 
-	cursorImg.src = "src/img/Cursor.png";
+	cursorImg.src = "src/img/cursor_1.png";
 }
 
 
@@ -205,7 +205,7 @@ function Draw() {
 		// Draw the cursor.
 		gameContext.drawImage(cursorImg, 
 			onCanvasMousePosition.x, onCanvasMousePosition.y,
-			12, 12);
+			8, 8);
 	}
 }
 
