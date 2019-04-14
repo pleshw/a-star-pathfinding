@@ -142,6 +142,9 @@ function Draw() {
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+	gameContext.font = "20px Arial";
+	gameContext.fillText("Right-click to walk.", 10, 50);
+
 	gameContext.fillStyle = "lightgrey";
 	for(let y = 0; y < grid.rows; y++)
 		for(let x = 0; x < grid.cols; x++)
