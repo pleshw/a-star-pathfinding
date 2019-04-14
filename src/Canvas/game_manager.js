@@ -142,6 +142,7 @@ function Draw() {
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+	gameContext.fillStyle = "rgba(222, 173, 244, .4)";
 	gameContext.font = "20px Arial";
 	gameContext.fillText("Right-click to walk.", 10, 50);
 
