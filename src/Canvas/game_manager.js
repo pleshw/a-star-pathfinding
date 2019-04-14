@@ -17,6 +17,7 @@ let drawCursor = false;
 const cursorImg = new Image();
 
 let keydown = new Map();
+let rightclick = false;
 let mousedown = false;
 
 let player;
@@ -48,6 +49,11 @@ window.addEventListener("load", function(){
 		mouseOnCanvas = false;
 		if (mouseOnCanvas) mouseReady = false;
 	});
+	gameCanvas.addEventListener("contextmenu", _event => {
+		_event.preventDefault();
+		rightclick = true;
+		setTimeout(()=>{rightclick = false;}, 50);
+	});
 
 	gameCanvas.addEventListener("mousedown", _event => {
 		mousedown = true;
@@ -59,10 +65,10 @@ window.addEventListener("load", function(){
 	gameCanvas.addEventListener("mousemove", _event => {
 		if (mouseOnCanvas) mouseReady = true;
 		onCanvasMousePosition = getMousePosition(gameCanvas, _event);
-	},);
+	});
 
 	gameCanvas.addEventListener("touchstart", _event => {
-		mousedown = true;
+		rightclick = true;
 		drawCursor = true;
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	},{passive: true});
@@ -178,7 +184,7 @@ function Draw() {
 		const selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
 
 		// On mouse down finds the way to the cursor and change the player path
-		if (mousedown){
+		if (rightclick){
 			const v = A_Star(player.position, selectedCell, grid);
 			if (v != -1)
 				player.path = v;
@@ -192,7 +198,7 @@ function Draw() {
 
 		// Paint
 		gameContext.beginPath();
-		gameContext.strokeStyle = "white";
+		gameContext.strokeStyle = "rgba(254,254,254, .3)";
 		gameContext.strokeRect(
 			selectedCellFillPosition.x, selectedCellFillPosition.y,
 			cellWidth, cellHeight);
