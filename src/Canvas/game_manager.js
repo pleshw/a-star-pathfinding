@@ -50,12 +50,15 @@ window.addEventListener("load", function(){
 		if (mouseOnCanvas) mouseReady = false;
 	});
 	gameCanvas.addEventListener("contextmenu", _event => {
+		_event.stopImmediatePropagation();
 		_event.preventDefault();
 		rightclick = true;
 		setTimeout(()=>{rightclick = false;}, 50);
+		return false;
 	});
 
 	gameCanvas.addEventListener("mousedown", _event => {
+		_event.stopImmediatePropagation();
 		mousedown = true;
 	});
 	gameCanvas.addEventListener("mouseup", _event => {
@@ -100,14 +103,12 @@ function Setup(){
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
-	
-	// make 5 barriers.
-	for(let y = 0; y < 21; y++){grid.block(11, y);}
-	for(let y = 0; y < 21; y++){grid.block(12, y);}
-	for(let y = 0; y < 19; y++){grid.block(13, y);}
-	for(let y = 0; y < 19; y++){grid.block(21, y);}
-	for(let j = 0; j < 19; j++){grid.block(22, j);}
-
+	// // make 5 barriers.
+	// for(let y = 0; y < 21; y++){grid.block(11, y);}
+	// for(let y = 0; y < 21; y++){grid.block(12, y);}
+	// for(let y = 0; y < 19; y++){grid.block(13, y);}
+	// for(let y = 0; y < 19; y++){grid.block(21, y);}
+	// for(let j = 0; j < 19; j++){grid.block(22, j);}
 	drawGrid();
 
 	// remove the default cursor
@@ -144,7 +145,7 @@ function Draw() {
 
 	gameContext.fillStyle = "rgba(222, 173, 244, .4)";
 	gameContext.font = "20px Arial";
-	gameContext.fillText("Right-click to walk.", 10, 50);
+	gameContext.fillText("Click to walk.", 10, 50);
 
 	gameContext.fillStyle = "lightgrey";
 	for(let y = 0; y < grid.rows; y++)
@@ -186,7 +187,7 @@ function Draw() {
 		const selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
 
 		// On mouse down finds the way to the cursor and change the player path
-		if (rightclick){
+		if (mousedown){
 			const v = A_Star(player.position, selectedCell, grid);
 			if (v != -1)
 				player.path = v;
