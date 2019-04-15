@@ -98,17 +98,17 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	const gridRows = 22;
-	const gridCols = 54;
+	const gridRows = 32;
+	const gridCols = 74;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
-	// // make 5 barriers.
-	// for(let y = 0; y < 21; y++){grid.block(11, y);}
-	// for(let y = 0; y < 21; y++){grid.block(12, y);}
-	// for(let y = 0; y < 19; y++){grid.block(13, y);}
-	// for(let y = 0; y < 19; y++){grid.block(21, y);}
-	// for(let j = 0; j < 19; j++){grid.block(22, j);}
+	// // make some barriers.
+	for(let y = 0; y < 20; y++)
+		for(let x = 0; x < 20; x++)
+			grid.block( 
+				getRandomInt(1, grid.cols), getRandomInt(0, grid.rows));
+
 	drawGrid();
 
 	// remove the default cursor
@@ -143,9 +143,6 @@ function Draw() {
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-	gameContext.fillStyle = "rgba(222, 173, 244, .4)";
-	gameContext.font = "20px Arial";
-	gameContext.fillText("Click to walk.", 10, 50);
 
 	gameContext.fillStyle = "lightgrey";
 	for(let y = 0; y < grid.rows; y++)
@@ -177,7 +174,7 @@ function Draw() {
 	const playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
 	const playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
 	// Draw the player at the center of the cell.
-	gameContext.fillStyle = "rgba(182, 133, 244, .9)";
+	gameContext.fillStyle = "red";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
 		player.width, player.height);
@@ -212,6 +209,9 @@ function Draw() {
 			onCanvasMousePosition.x, onCanvasMousePosition.y,
 			8, 8);
 	}
+	gameContext.fillStyle = "rgba(222, 93, 144, 1)";
+	gameContext.font = "20px Arial";
+	gameContext.fillText("Click to walk.", 10, 50);
 }
 
 // Clear the grid canvas.
