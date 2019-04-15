@@ -98,14 +98,13 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	const gridRows = 32;
+	const gridRows = 60;
 	const gridCols = 74;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	// // make some barriers.
-	for(let y = 0; y < 20; y++)
-		for(let x = 0; x < 20; x++)
+	for(let y = 0; y < 1200; y++)
 			grid.block( 
 				getRandomInt(1, grid.cols), getRandomInt(0, grid.rows));
 
@@ -144,7 +143,7 @@ function Draw() {
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
 
-	gameContext.fillStyle = "lightgrey";
+	gameContext.fillStyle = "rgba(120, 100, 100, .4)";
 	for(let y = 0; y < grid.rows; y++)
 		for(let x = 0; x < grid.cols; x++)
 			if (grid.isBlocked(x, y))
@@ -174,7 +173,7 @@ function Draw() {
 	const playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
 	const playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
 	// Draw the player at the center of the cell.
-	gameContext.fillStyle = "red";
+	gameContext.fillStyle = "darkorange";
 	gameContext.fillRect(
 		playerHorizontalDrawing, playerVerticalDrawing,
 		player.width, player.height);
