@@ -71,11 +71,13 @@ window.addEventListener("load", function(){
 	});
 
 	gameCanvas.addEventListener("touchstart", _event => {
-		rightclick = true;
 		drawCursor = true;
+		mousedown = true;
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	},{passive: true});
 	gameCanvas.addEventListener("touchmove", _event => {
+		drawCursor = true;
+		mousedown = true;
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	}, {passive: true});
 
