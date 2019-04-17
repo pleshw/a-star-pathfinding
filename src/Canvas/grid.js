@@ -159,35 +159,31 @@ class Grid{
 
 	// return the position of any valid cell that is adjacent to the cell at given position.
 	positionOfAdjacents( x, y ){
-		const adjacents = [
-			 {x: x,   y: y-1},
-			 {x: x+1, y: y},
-			 {x: x,   y: y+1},
-			 {x: x-1, y: y},
-			 {x: x+1, y: y-1},
-			 {x: x-1, y: y-1},
-			 {x: x+1, y: y+1},
-			 {x: x-1, y: y+1}
-		];
-		return adjacents.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
+		return [{x: x,   y: y-1},
+			 	{x: x+1, y: y},
+			 	{x: x,   y: y+1},
+			 	{x: x-1, y: y},
+			 	{x: x+1, y: y-1},
+			 	{x: x-1, y: y-1},
+			 	{x: x+1, y: y+1},
+			 	{x: x-1, y: y+1}]
+			.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
 	}
 
 	// return the position of any valid cell that is adjacent to the cell at given position.
 	positionOfAdjacentsWithNoDiagonals( x, y ){
-		const adjacents = [
-			 {x: x,   y: y-1},
-			 {x: x+1, y: y},
-			 {x: x,   y: y+1},
-			 {x: x-1, y: y}
-		];
-		return adjacents.filter( _pos=>{return this.cellExist(_pos.x, _pos.y);} );
+		return [{x: x,   y: y-1},
+			 	{x: x+1, y: y},
+				{x: x,   y: y+1},
+				{x: x-1, y: y}]
+			.filter( _pos => {return this.cellExist(_pos.x, _pos.y);} );
 	}
 
 	// return the state of a cell
 		// if it does not exist return -1.
-	cellInSpace( x, y ){
+	cellOnGrid( x, y ){
 		if ( !this.cellExist(x, y) ) return -1; 
-		return this.cell[this.indexOfCellInSpace(x, y)];
+		return this.cell[this.indexOfCellOnGrid(x, y)];
 	}
 
 	// return the position considering the grid an matrix of a cell in a given position.
@@ -196,13 +192,13 @@ class Grid{
 		/*
 			Example: cell at position 8,0 on canvas is the cell at position 1 on buffer.
 		 */ 
-	indexOfCellInSpace( x, y ){
+	indexOfCellOnGrid( x, y ){
 		return this.index(
 			Math.floor(x/this.cell_width),
 			Math.floor(y/this.cell_height));
 	}
 
-	// Return the same as cellInSpace function, but as an 2d coordinate.
+	// Return the same as indexOfCellOnGrid function, but as an 2d coordinate.
 	positionOfCellOnGrid( x, y ){
 		return { 
 			x: Math.floor(x/this.cell_width),
