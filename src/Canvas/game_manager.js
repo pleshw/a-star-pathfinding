@@ -83,7 +83,7 @@ window.addEventListener("load", function(){
 
 
 	Setup();
-	setInterval( function(){Draw();}, 1000/30 );
+	setInterval( function(){Draw();}, 1000/240 );
 });
 
 
@@ -100,13 +100,13 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	const gridRows = 33;
-	const gridCols = 53;
+	const gridRows = 114;
+	const gridCols = 118;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	// // make some barriers.
-	for(let y = 0; y < 120; y++)
+	for(let y = 0; y < 3444; y++)
 			grid.block( 
 				getRandomInt(1, grid.cols), getRandomInt(0, grid.rows));
 
@@ -121,7 +121,7 @@ function Setup(){
 	const height = 12; 
 	// make a player at the bottom left of the grid.
 	player = new Player( 
-		0, 12, 
+		0, 0, 
 		maxHp, maxSp, 
 		width, height
 	);

@@ -26,17 +26,17 @@
  var BLOCKED = 8;
 
 class Grid{
-	constructor( rows, cols, cellWidth, cellHeight ){
+	constructor( rows, cols, cellWidth = 1, cellHeight = 1 ){
 		this._rows = rows;
 		this._cols = cols;
 
 		// Array of cells.
-		this.cell = [];
+		this.cell = Array(rows * cols);
 
 		this.cell_width = cellWidth;
 		this.cell_height = cellHeight;
 
-		for( let i = 0; i < rows * cols; i++ )
+		for( let i = 0; i < this.cell.length; i++ )
 			this.cell[i] = 1;
 	}
 
