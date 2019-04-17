@@ -1,4 +1,4 @@
-// This file provides pathfinding algorithms for my game purposes.
+// This file provides the A* algorithm for my game purposes.
 
 
 
@@ -8,10 +8,11 @@ function byFScore(a, b){
 	if (a.f > b.f)  return  1;
 }
 
+// An A* node struct
 class A_StarNode {
-	constructor( pos, index, g = 0, h = 0 ){
-		this.x = pos.x;
-		this.y = pos.y;
+	constructor( x, y, index, g = 0, h = 0 ){
+		this.x = x;
+		this.y = y;
 		this.index = index;
 		this.g = g; // distance from this node to initial point
 		this.h = h; // heuristic from this node to goal
@@ -27,26 +28,25 @@ class A_StarGrid extends Grid{
 		this.open_list = new Map();
 		this.closed_list = new Map();
 
+		// make this cells a copy of grid cells
 		this.copy(grid);
 
 		// the cell cost evaluating variables
 		this.node = new Array(this.rows);
-		for( let i = 0; i < this.node.length; i++ )
-			this.node[i] = new Array(this.cols);
+		for( let i = 0; i < this.rows; i++ ) this.node[i] = new Array(this.cols);
 
+		// store all the nodes with its heuristic values
 		for( let i = 0; i < this.rows; i++ )
-			for( let j = 0; j < this.cols; j++ ){
-				let tmp_pos = {x: j, y: i};
-				// store all the nodes with its heuristic values
-				this.node[i][j] = new A_StarNode( tmp_pos, 
-												  this.mapIndex(tmp_pos), 
-												  0, heuristicEvaluate(tmp_pos, end) );
-				// get the goal node
-				if (tmp_pos.x == end.x && tmp_pos.y == end.y) this.goal = this.node[i][j];
-			}
+			for( let j = 0; j < this.cols; j++ )
+				
+				this.node[i][j] = new A_StarNode( j, i, 
+												  this.mapIndex(j, i), 
+												  0, heuristicEvaluate(j, i, end));
+		// get the goal node
+		this.goal = this.node[end.y][end.x];
 
 		// the open list recieve the initial position node.
-		this.openList.set(this.mapIndex(start), this.node[start.y][start.x]);
+		this.openList.set(this.node[start.y][start.x], this.node[start.y][start.x]);
 	}
 
 	get openList(){
@@ -94,13 +94,14 @@ class A_StarGrid extends Grid{
 
 	// Get the element from openList with the lowest fscore
 	lowestFScoreInOpenList(){
-		let tmp = Array.from(this.openList.values());
-		return tmp.sort(byFScore)[0];
+		return Array
+				.from(this.openList.values())
+				.sort(byFScore)[0];
 	}
 
 	// return an index given a position
-	mapIndex( position ){
-		return this.index(position.x, position.y);
+	mapIndex( x, y ){
+		return this.index(x, y);
 	}
 
 }
@@ -112,7 +113,7 @@ function A_Star(initialPosition, finalPosition, grid) {
 
 	let path = new Map();
 
-	let current = pathGrid.lowestFScoreNeighbor(initialPosition);
+	let current = pathGrid.lowestFScoreInOpenList(initialPosition);
 
 	while(pathGrid.canContinue){
 		// current cell recieve the lowest fscore neighbor in openset
@@ -134,12 +135,12 @@ function A_Star(initialPosition, finalPosition, grid) {
 
 		// remove the current place from the open list and add to the closed list
 			// it means that the current place is marked as checked.
-		pathGrid.openList.delete(pathGrid.mapIndex(current));
-		pathGrid.closedList.set(pathGrid.mapIndex(current), current);
+		pathGrid.openList.delete(current);
+		pathGrid.closedList.set(current, current);
 
 		// search for the best move
 		pathGrid.neighbors(current, checkDiagonals).forEach( neighbor =>{
-			if (pathGrid.closedList.has(pathGrid.mapIndex(neighbor)) || pathGrid.isBlocked(neighbor.x, neighbor.y))
+			if (pathGrid.closedList.has(neighbor) || pathGrid.isBlocked(neighbor.x, neighbor.y))
 				return;
 
 			const tmp_GScore = current.g + 1; // current gscore + the distance from current to neighbor.
@@ -149,8 +150,8 @@ function A_Star(initialPosition, finalPosition, grid) {
 				// put it on openList 
 				// if the gscore is greater then just ignore.
 			 */
-			if(!pathGrid.openList.get(pathGrid.mapIndex(neighbor)))
-				pathGrid.openList.set(pathGrid.mapIndex(neighbor), neighbor);
+			if(!pathGrid.openList.get(neighbor))
+				pathGrid.openList.set(neighbor, neighbor);
 			else if(tmp_GScore >= neighbor.g)
 				return;
 			// console.log(pathGrid.lowestFScoreInOpenList(pathGrid.openList));
@@ -161,7 +162,7 @@ function A_Star(initialPosition, finalPosition, grid) {
 			current.g = tmp_GScore;
 			path.set( neighbor, current );
 		}); // for each
-	}
+	} // while can continue
 	return -1;
 }
 

@@ -100,13 +100,13 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	const gridRows = 60;
-	const gridCols = 74;
+	const gridRows = 33;
+	const gridCols = 53;
 	cellWidth = gridCanvas.width/gridCols;
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	// // make some barriers.
-	for(let y = 0; y < 1200; y++)
+	for(let y = 0; y < 120; y++)
 			grid.block( 
 				getRandomInt(1, grid.cols), getRandomInt(0, grid.rows));
 
@@ -126,7 +126,7 @@ function Setup(){
 		width, height
 	);
 
-	cursorImg.src = "src/img/cursor_1.png";
+	cursorImg.src = "src/img/cursor_3.png";
 }
 
 
@@ -182,7 +182,7 @@ function Draw() {
 
 	if (mouseReady){
 		// get the cell that is under the cursor.
-		const selectedCell = grid.positionOfCellInSpace(onCanvasMousePosition.x,  onCanvasMousePosition.y);
+		const selectedCell = grid.positionOfCellOnGrid(onCanvasMousePosition.x,  onCanvasMousePosition.y);
 
 		// On mouse down finds the way to the cursor and change the player path
 		if (mousedown){
@@ -208,8 +208,9 @@ function Draw() {
 		// Draw the cursor.
 		gameContext.drawImage(cursorImg, 
 			onCanvasMousePosition.x, onCanvasMousePosition.y,
-			8, 8);
-	}
+			32, 32);
+	} // mouse ready
+
 	gameContext.fillStyle = "rgba(222, 93, 144, 1)";
 	gameContext.font = "20px Arial";
 	gameContext.fillText("Click to walk.", 10, 50);

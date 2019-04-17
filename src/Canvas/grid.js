@@ -50,9 +50,8 @@ class Grid{
 
 	copy( clone ){
 		for(let y = 0; y < this.rows; y++)
-			for(let x = 0; x < this.cols; x++){
+			for(let x = 0; x < this.cols; x++)
 				this.cell[this.index(x,y)] = clone.cell[grid.index(x,y)];
-			}
 	}
 
 	get cellWidth(){
@@ -112,7 +111,6 @@ class Grid{
 			this.cell[this.index(x,y)] += FREE;
 			return true;
 		}
-
 		return false;
 	}
 
@@ -121,6 +119,16 @@ class Grid{
 			if (this.isFree(x, y)) this.cell[this.index(x,y)] -= FREE;
 			if (this.isOcuppied(x, y)) this.cell[this.index(x,y)] -= OCCUPIED;
 			this.cell[this.index(x,y)] += BLOCKED;
+			return true;
+		}
+		return false;
+	}
+
+	occupy( x, y ){
+		if (!this.isOcuppied(x, y)){
+			if (this.isFree(x, y)) this.cell[this.index(x,y)] -= FREE;
+			if (this.isOcuppied(x, y)) this.cell[this.index(x,y)] -= BLOCKED;
+			this.cell[this.index(x,y)] += OCCUPIED;
 			return true;
 		}
 		return false;
@@ -189,13 +197,13 @@ class Grid{
 			Example: cell at position 8,0 on canvas is the cell at position 1 on buffer.
 		 */ 
 	indexOfCellInSpace( x, y ){
-		const final_x = Math.floor(x/this.cell_width);
-		const final_y = Math.floor(y/this.cell_height);
-		return this.index(final_x, final_y);
+		return this.index(
+			Math.floor(x/this.cell_width),
+			Math.floor(y/this.cell_height));
 	}
 
 	// Return the same as cellInSpace function, but as an 2d coordinate.
-	positionOfCellInSpace( x, y ){
+	positionOfCellOnGrid( x, y ){
 		return { 
 			x: Math.floor(x/this.cell_width),
 			y: Math.floor(y/this.cell_height)
