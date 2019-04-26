@@ -1,6 +1,8 @@
 let gameCanvas;
 let gameContext;
 
+let clock = new Clock();
+
 let backgroundCanvas;
 let backgroundContext;
 
@@ -9,11 +11,12 @@ let gridContext;
 
 let grid;
 let cellWidth, cellHeight;
+let selectedCell, lastCellClicked;
 
 let mouseOnCanvas = false;
 let onCanvasMousePosition;
 let mouseReady = false;
-let drawCursor = false;
+let isCursorOnCanvas = false;
 const cursorImg = new Image();
 
 let keydown = new Map();
@@ -71,19 +74,19 @@ window.addEventListener("load", function(){
 	});
 
 	gameCanvas.addEventListener("touchstart", _event => {
-		drawCursor = true;
+		isCursorOnCanvas = true;
 		mousedown = true;
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	},{passive: true});
 	gameCanvas.addEventListener("touchmove", _event => {
-		drawCursor = true;
+		isCursorOnCanvas = true;
 		mousedown = true;
 		onCanvasMousePosition = getTouchPosition(gameCanvas, _event);
 	}, {passive: true});
 
 
 	Setup();
-	setInterval( function(){Draw();}, 1000/240 );
+	setInterval( function(){GameLoop();}, 1000/120 );
 });
 
 
@@ -132,18 +135,26 @@ function Setup(){
 
 // Control the game logic { player movement, game time, monsters etc... }
 function Logic(){
-	// make the player movement
+	// find the path from the player position to the selected cell
+	if (mouseReady){
+		// get the cell that is under the cursor.
+		selectedCell = grid.positionOfCellOnGrid(onCanvasMousePosition.x,  onCanvasMousePosition.y);
+		// On mouse down finds the way to the cursor and change the player path
+		if (mousedown && !hasSamePosition(lastCellClicked, selectedCell)){
+			const v = A_Star(player.position, selectedCell, grid);
+			if (v != -1)
+				player.path = v;
+			lastCellClicked = selectedCell;
+		}
+	}
 	player.move();
 }
 
 
 // Draw the game.
 function Draw() {
-	Logic();
-
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
 
 	gameContext.fillStyle = "rgba(120, 100, 100, .4)";
 	for(let y = 0; y < grid.rows; y++)
@@ -180,19 +191,10 @@ function Draw() {
 		playerHorizontalDrawing, playerVerticalDrawing,
 		player.width, player.height);
 
+
 	if (mouseReady){
-		// get the cell that is under the cursor.
-		const selectedCell = grid.positionOfCellOnGrid(onCanvasMousePosition.x,  onCanvasMousePosition.y);
-
-		// On mouse down finds the way to the cursor and change the player path
-		if (mousedown){
-			const v = A_Star(player.position, selectedCell, grid);
-			if (v != -1)
-				player.path = v;
-		}		
-
 		// Get the actual cell position in space
-		const selectedCellFillPosition = {
+		const selectedCellCanvasPosition = {
 			x: (cellWidth*selectedCell.x),
 			y: (cellHeight*selectedCell.y),
 		}
@@ -201,7 +203,7 @@ function Draw() {
 		gameContext.beginPath();
 		gameContext.strokeStyle = "rgba(254,254,254, .6)";
 		gameContext.strokeRect(
-			selectedCellFillPosition.x, selectedCellFillPosition.y,
+			selectedCellCanvasPosition.x, selectedCellCanvasPosition.y,
 			cellWidth, cellHeight);
 		gameContext.endPath;
 
@@ -216,21 +218,15 @@ function Draw() {
 	gameContext.fillText("Click to walk.", 10, 50);
 }
 
+function GameLoop(){
+	clock.tick();
+	Logic();
+	Draw();
+	console.log( 'Game running at: ' + clock.fps + ' fps');
+}
+
 // Clear the grid canvas.
 function clearGrid(){
 	gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 }
 
-// Draw the grid cols and rows at grid canvas.
-function drawGrid(){
-	gridContext.strokeStyle = "rgba(184,184,184, .1)";
-	for( let x = 0; x < grid.cols+1; x++ ){
-		gridContext.moveTo(x * cellWidth, 0);
-		gridContext.lineTo(x * cellWidth, grid.rows*cellHeight );
-	}
-	for( let y = 0; y < grid.rows+1; y++ ){
-		gridContext.moveTo(0, y * cellHeight);
-		gridContext.lineTo(grid.cols*cellWidth, y * cellHeight );
-	}
-	gridContext.stroke();
-}
