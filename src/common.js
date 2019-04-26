@@ -34,6 +34,11 @@ function distance2d( x1, y1, x2, y2 ){
 	return Math.sqrt( (a**2) + (b**2) );
 }
 
+function hasSamePosition( p1, p2 ){
+	if(!p1 || !p2) return false;
+	return p1.x == p2.x && p1.y == p2.y;
+}
+
 
 class Stack{
 	constructor(){
