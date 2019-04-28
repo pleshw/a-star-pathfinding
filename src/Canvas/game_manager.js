@@ -107,8 +107,8 @@ function Setup(){
 	const gridCols = 78;
 
 	// Get the final cell width and cell height of the grid
-	const cellWidth = gridCanvas.width/gridCols;
-	const cellHeight = gridCanvas.height/gridRows;
+	cellWidth = gridCanvas.width/gridCols;
+	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	// // make some barriers.
 	for(let y = 0; y < 30; y++)
