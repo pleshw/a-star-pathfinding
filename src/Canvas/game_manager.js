@@ -103,13 +103,15 @@ function Setup(){
 	backgroundContext.fillRect( 0, 0, gameCanvas.width, gameCanvas.height );
 
 	// Setup and draw the grid.
-	const gridRows = 114;
-	const gridCols = 118;
-	cellWidth = gridCanvas.width/gridCols;
-	cellHeight = gridCanvas.height/gridRows;
+	const gridRows = 54;
+	const gridCols = 78;
+
+	// Get the final cell width and cell height of the grid
+	const cellWidth = gridCanvas.width/gridCols;
+	const cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	// // make some barriers.
-	for(let y = 0; y < 3444; y++)
+	for(let y = 0; y < 30; y++)
 			grid.block( 
 				getRandomInt(1, grid.cols), getRandomInt(0, grid.rows));
 
@@ -156,66 +158,20 @@ function Draw() {
 	// Clear the canvas.
 	gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-	gameContext.fillStyle = "rgba(120, 100, 100, .4)";
-	for(let y = 0; y < grid.rows; y++)
-		for(let x = 0; x < grid.cols; x++)
-			if (grid.isBlocked(x, y))
-				gameContext.fillRect(
-					x*cellWidth, y*cellHeight,
-					cellWidth, cellHeight);
-
-	// if player have moves draw the player path
-	gameContext.beginPath();
-	gameContext.strokeStyle = "rgba(242, 32, 58, .5)";
 	if (player.movesLeft > 0)
-		player.path.forEach( (element, index, array) =>{
-			if (array[index+1]){			
-				gameContext.moveTo(
-					cellWidth*(element.x)+(cellWidth/2), 
-					cellHeight*(element.y)+(cellHeight/2));
-				gameContext.lineTo(
-					cellWidth*array[index+1].x+(cellWidth/2), 
-					cellHeight*array[index+1].y+(cellHeight/2));
-			}
-		}); // for each end
-	// if end
-	gameContext.stroke();
-	gameContext.endPath;
+		drawPath(player.path);
 
-	// Get the player drawing position.
-	const playerHorizontalDrawing = ((2*cellWidth*player.position.x) + cellWidth  - player.width)/2;
-	const playerVerticalDrawing = ((2*cellHeight*player.position.y) + cellHeight  - player.height)/2;
-	// Draw the player at the center of the cell.
-	gameContext.fillStyle = "darkorange";
-	gameContext.fillRect(
-		playerHorizontalDrawing, playerVerticalDrawing,
-		player.width, player.height);
+
+	drawObject( player );
 
 
 	if (mouseReady){
-		// Get the actual cell position in space
-		const selectedCellCanvasPosition = {
-			x: (cellWidth*selectedCell.x),
-			y: (cellHeight*selectedCell.y),
-		}
-
-		// Paint
-		gameContext.beginPath();
-		gameContext.strokeStyle = "rgba(254,254,254, .6)";
-		gameContext.strokeRect(
-			selectedCellCanvasPosition.x, selectedCellCanvasPosition.y,
-			cellWidth, cellHeight);
-		gameContext.endPath;
-
-		// Draw the cursor.
-		gameContext.drawImage(cursorImg, 
-			onCanvasMousePosition.x, onCanvasMousePosition.y,
-			32, 32);
+		drawCursor( selectedCell );
 	} // mouse ready
 
-	gameContext.fillStyle = "rgba(222, 93, 144, 1)";
-	gameContext.font = "20px Arial";
-	gameContext.fillText("Click to walk.", 10, 50);
+	gameContext.fillStyle = "white";
+	gameContext.font = "8px Arial";
+	gameContext.fillText(clock.fps + " fps", 10, 50);
 }
 
 function GameLoop(){
@@ -225,8 +181,4 @@ function GameLoop(){
 	console.log( 'Game running at: ' + clock.fps + ' fps');
 }
 
-// Clear the grid canvas.
-function clearGrid(){
-	gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
-}
 
