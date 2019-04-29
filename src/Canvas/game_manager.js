@@ -38,12 +38,6 @@ window.addEventListener("load", function(){
 	gridCanvas = document.getElementById("gridCanvas");
 	gridContext = gridCanvas.getContext('2d');
 
-	// addEventListener("keydown", _target => {
-	// 	keydown[_target.key] = true;
-	// });
-	// addEventListener("keyup", _target => {
-	// 	keydown[_target.key] = false;
-	// });
 
 	gameCanvas.addEventListener("mouseover", _event => {
 		mouseOnCanvas = true;
@@ -111,7 +105,7 @@ function Setup(){
 	cellHeight = gridCanvas.height/gridRows;
 	grid = new Grid( gridRows, gridCols, cellWidth, cellHeight );
 	// // make some barriers.
-	for(let y = 0; y < 30; y++)
+	for(let y = 0; y < 1200; y++)
 			grid.block( 
 				getRandomInt(1, grid.cols), getRandomInt(0, grid.rows));
 
