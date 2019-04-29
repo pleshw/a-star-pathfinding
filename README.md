@@ -1,3 +1,5 @@
-# simple-rpg
+# It was suposed to be a RPG
 
-### A simple rpg made with pure javascript and concepts that i've learned with the Unity engine and Selan lessons(My last programming teacher).
+## An implementation of A* Pathfinder
+
+Here is an implementation of A* in javascript, the algorithm find the path and return as an `Map()` of positions.
